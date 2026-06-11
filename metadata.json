@@ -1,0 +1,1 @@
+{"name":"Model Evaluation Dashboard","description":"A high-fidelity dashboard for evaluating and comparing V1 and V2 anomaly detection models, featuring interactive metrics, slice segmentation, and error distribution metrics.","requestFramePermissions":[],"majorCapabilities":["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]}
