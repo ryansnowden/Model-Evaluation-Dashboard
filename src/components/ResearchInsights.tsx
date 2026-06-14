@@ -144,8 +144,8 @@ const gaps: GapItem[] = [
     area: 'Event-Level Evaluation',
     currentState: 'Using tIoU metric in pipeline',
     sotaState: 'Proposed as new standard in 2026 papers',
-    gap: 'ahead',
-    recommendation: 'Verify your event merging logic aligns with the emerging standard. You are ahead of most academic benchmarks.',
+    gap: 'aligned',
+    recommendation: 'Verify event merging logic aligns with the emerging standard.',
     papers: ['frames-to-events'],
     priority: 1,
   },
@@ -270,7 +270,7 @@ export default function ResearchInsights() {
   }, [selectedRoadmapFilter]);
 
   return (
-    <div className="flex-col gap-8" style={{ paddingBottom: 60 }}>
+    <div className="flex-col gap-6" style={{ paddingBottom: 32 }}>
 
       {/* ── Section 1: Research Maturity Radar ── */}
       <section>
@@ -278,14 +278,14 @@ export default function ResearchInsights() {
           <div>
             <div className="flex items-center gap-2">
               <Brain size={16} color="var(--accent)" />
-              <h2 className="section-title">Research Maturity Radar</h2>
+              <h2 className="section-title">Capability Maturity Radar</h2>
             </div>
-            <p className="section-subtitle">Your pipeline vs. state-of-the-art across 7 capability dimensions.</p>
+            <p className="section-subtitle">Pipeline capabilities across 7 dimensions.</p>
           </div>
         </div>
         <div className="flex gap-4" style={{ alignItems: 'flex-start' }}>
-          <div className="card flex-1" style={{ padding: 16 }}>
-            <div style={{ height: 340 }}>
+          <div className="card flex-1" style={{ padding: 12 }}>
+            <div style={{ height: 260 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={maturityData} cx="50%" cy="50%" outerRadius="72%">
                   <PolarGrid stroke="var(--border-subtle)" />
@@ -361,35 +361,32 @@ export default function ResearchInsights() {
             <p className="section-subtitle">Prioritised capability gaps with actionable next steps. Ordered by business impact.</p>
           </div>
         </div>
-        <div className="flex-col gap-2">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '12px' }}>
           {sortedGaps.map((gap, i) => {
-            const gapIcon = gap.gap === 'ahead' ? <CheckCircle2 size={16} /> :
-              gap.gap === 'aligned' ? <Gauge size={16} /> :
+            const gapIcon = gap.gap === 'aligned' ? <CheckCircle2 size={16} /> :
               gap.gap === 'behind' ? <AlertTriangle size={16} /> :
               <XCircle size={16} />;
-            const gapColor = gap.gap === 'ahead' ? 'var(--color-pass)' :
-              gap.gap === 'aligned' ? 'var(--color-info)' :
+            const gapColor = gap.gap === 'aligned' ? 'var(--color-pass)' :
               gap.gap === 'behind' ? 'var(--color-warn)' :
               'var(--color-fail)';
-            const gapBg = gap.gap === 'ahead' ? 'var(--color-pass-muted)' :
-              gap.gap === 'aligned' ? 'var(--color-info-muted)' :
+            const gapBg = gap.gap === 'aligned' ? 'var(--color-pass-muted)' :
               gap.gap === 'behind' ? 'var(--color-warn-muted)' :
               'var(--color-fail-muted)';
 
             return (
-              <div key={gap.area} className="card" style={{ padding: '14px 18px' }}>
-                <div className="flex gap-4 items-start">
+              <div key={gap.area} className="card" style={{ padding: '12px 14px' }}>
+                <div className="flex gap-3 items-start">
                   <div style={{
-                    width: 28, height: 28, borderRadius: 'var(--radius-sm)',
+                    width: 24, height: 24, borderRadius: 'var(--radius-sm)',
                     background: gapBg, color: gapColor,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexShrink: 0, marginTop: 2,
                   }}>
                     {gapIcon}
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div className="flex items-center gap-2" style={{ marginBottom: 4 }}>
-                      <span className="font-semibold text-sm">{gap.area}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div className="flex items-center gap-2 flex-wrap" style={{ marginBottom: 6 }}>
+                      <span className="font-semibold text-sm truncate">{gap.area}</span>
                       <span className="badge" style={{ background: gapBg, color: gapColor, border: 'none', fontSize: 9, padding: '1px 6px' }}>
                         {gap.gap.toUpperCase()}
                       </span>
@@ -397,12 +394,12 @@ export default function ResearchInsights() {
                         P{gap.priority}
                       </span>
                     </div>
-                    <div className="flex gap-6" style={{ fontSize: 12, marginBottom: 6 }}>
-                      <div>
+                    <div className="flex-col gap-1" style={{ fontSize: 11, marginBottom: 8 }}>
+                      <div className="truncate">
                         <span className="text-muted">Current: </span>
                         <span className="text-secondary">{gap.currentState}</span>
                       </div>
-                      <div>
+                      <div className="truncate">
                         <span className="text-muted">SOTA: </span>
                         <span className="text-secondary">{gap.sotaState}</span>
                       </div>
@@ -445,12 +442,12 @@ export default function ResearchInsights() {
               <FlaskConical size={16} color="var(--accent)" />
               <h2 className="section-title">Benchmark Landscape</h2>
             </div>
-            <p className="section-subtitle">Your model's AUC performance mapped against academic state-of-the-art on standard datasets.</p>
+            <p className="section-subtitle">Model AUC performance mapped against standard datasets.</p>
           </div>
         </div>
         <div className="flex gap-4" style={{ alignItems: 'flex-start' }}>
-          <div className="card flex-1" style={{ padding: 16 }}>
-            <div style={{ height: 280 }}>
+          <div className="card flex-1" style={{ padding: 12 }}>
+            <div style={{ height: 240 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={benchmarks.map(b => ({
@@ -541,7 +538,7 @@ export default function ResearchInsights() {
             >
               {/* Header */}
               <div style={{
-                padding: '16px 18px',
+                padding: '12px 14px',
                 background: cs.status === 'resolved' ? 'var(--color-pass-muted)' : 'var(--color-warn-muted)',
                 borderBottom: '1px solid var(--border-subtle)',
               }}>
@@ -572,7 +569,7 @@ export default function ResearchInsights() {
                     transition={{ duration: 0.2 }}
                     style={{ overflow: 'hidden' }}
                   >
-                    <div className="flex-col gap-4" style={{ padding: '16px 18px' }}>
+                    <div className="flex-col gap-3" style={{ padding: '12px 14px' }}>
                       {/* Problem */}
                       <div>
                         <div className="text-muted" style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 4 }}>
@@ -611,7 +608,7 @@ export default function ResearchInsights() {
                         </div>
                       </div>
 
-                      {/* Research Link */}
+                      {/* External Link */}
                       <div style={{
                         padding: '8px 12px', borderRadius: 'var(--radius-sm)',
                         border: '1px dashed var(--border-default)', background: 'var(--bg-hover)',
@@ -731,15 +728,15 @@ export default function ResearchInsights() {
         </div>
       </section>
 
-      {/* ── Section 6: Research Paper Library ── */}
+      {/* ── Section 6: Technical Literature ── */}
       <section>
         <div className="section-header">
           <div>
             <div className="flex items-center gap-2">
               <BookOpen size={16} color="var(--accent)" />
-              <h2 className="section-title">Research Paper Library</h2>
+              <h2 className="section-title">Technical Literature</h2>
             </div>
-            <p className="section-subtitle">Key papers scored by relevance to your pipeline. Click to expand.</p>
+            <p className="section-subtitle">Key references scored by relevance to your pipeline. Click to expand.</p>
           </div>
           <div className="flex gap-2">
             {(['all', 'applicable', 'monitor', 'future'] as const).map(f => (
@@ -842,18 +839,18 @@ export default function ResearchInsights() {
               <Shield size={16} color="var(--color-fail)" />
               <h2 className="section-title">Evaluation Methodology Critique</h2>
             </div>
-            <p className="section-subtitle">Structural flaws identified by 2026 papers — and how your pipeline compares.</p>
+            <p className="section-subtitle">Structural flaws identified by 2026 papers.</p>
           </div>
         </div>
         <div className="flex gap-4">
           {/* Flaw 1: Frame-level grading */}
-          <div className="card flex-1" style={{ padding: 18 }}>
+          <div className="card flex-1" style={{ padding: 14 }}>
             <div className="flex items-center gap-2" style={{ marginBottom: 12 }}>
               <Eye size={16} color="var(--color-fail)" />
               <span className="font-semibold text-sm">Frame-Level Grading is Broken</span>
             </div>
             <div className="text-xs text-secondary" style={{ lineHeight: 1.6, marginBottom: 12 }}>
-              Academics grade AI on isolated video frames (AUC per frame) rather than continuous events. High frame AUC means nothing if the AI sends fragmented, unusable alerts.
+              Grading on isolated video frames (AUC per frame) rather than continuous events. High frame AUC does not correlate to usable alerts.
             </div>
             <div style={{
               padding: '10px 14px', borderRadius: 'var(--radius-md)',
@@ -861,16 +858,16 @@ export default function ResearchInsights() {
             }}>
               <div className="flex items-center gap-2" style={{ marginBottom: 4 }}>
                 <CheckCircle2 size={14} color="var(--color-pass)" />
-                <span className="text-xs font-semibold" style={{ color: 'var(--color-pass)' }}>YOUR PIPELINE IS AHEAD</span>
+                <span className="text-xs font-semibold" style={{ color: 'var(--color-pass)' }}>ALIGNED WITH STANDARD</span>
               </div>
               <div className="text-xs text-secondary" style={{ lineHeight: 1.5 }}>
-                You already use event-level tIoU evaluation. This aligns with the proposed new standard from "From Frames to Events" (2026).
+                Pipeline uses event-level tIoU evaluation. This aligns with the standard proposed in "From Frames to Events" (2026).
               </div>
             </div>
           </div>
 
           {/* Flaw 2: Single-scene */}
-          <div className="card flex-1" style={{ padding: 18 }}>
+          <div className="card flex-1" style={{ padding: 14 }}>
             <div className="flex items-center gap-2" style={{ marginBottom: 12 }}>
               <Layers size={16} color="var(--color-warn)" />
               <span className="font-semibold text-sm">Single-Scene Reality Mismatch</span>
@@ -893,7 +890,7 @@ export default function ResearchInsights() {
           </div>
 
           {/* Flaw 3: LLM bias */}
-          <div className="card flex-1" style={{ padding: 18 }}>
+          <div className="card flex-1" style={{ padding: 14 }}>
             <div className="flex items-center gap-2" style={{ marginBottom: 12 }}>
               <MessageSquare size={16} color="var(--color-info)" />
               <span className="font-semibold text-sm">Language Model Bias</span>
@@ -928,7 +925,7 @@ export default function ResearchInsights() {
             <p className="section-subtitle">Prioritised technology adoption path based on effort vs. impact analysis.</p>
           </div>
         </div>
-        <div className="card" style={{ padding: 20 }}>
+        <div className="card" style={{ padding: 16 }}>
           <div className="flex-col gap-1">
             {/* Phase headers */}
             <div className="flex gap-4 items-center" style={{ marginBottom: 12 }}>

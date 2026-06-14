@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { BarChart3, Microscope } from 'lucide-react';
+import { BarChart3, Microscope, BookOpen } from 'lucide-react';
 import EvaluationOverview from './components/EvaluationOverview';
 import ResearchInsights from './components/ResearchInsights';
+import EvalDocs from './components/EvalDocs';
 
-type View = 'evaluation' | 'research';
+type View = 'evaluation' | 'research' | 'docs';
 
 export default function App() {
   const [view, setView] = useState<View>('evaluation');
@@ -31,7 +32,14 @@ export default function App() {
             onClick={() => setView('research')}
           >
             <Microscope size={16} />
-            <span>Research Insights</span>
+            <span>Technical Insights</span>
+          </div>
+          <div
+            className={`nav-item ${view === 'docs' ? 'active' : ''}`}
+            onClick={() => setView('docs')}
+          >
+            <BookOpen size={16} />
+            <span>Eval Docs</span>
           </div>
         </div>
         <div style={{ padding: '12px 16px', borderTop: '1px solid var(--border-subtle)' }}>
@@ -48,16 +56,22 @@ export default function App() {
       <div className="main-area">
         <div className="topbar">
           <span className="topbar-title">
-            {view === 'evaluation' ? 'Model Evaluation Overview' : 'Research Insights & Recommendations'}
+            {view === 'evaluation' ? 'Model Evaluation Overview' :
+             view === 'research' ? 'Technical Insights & Recommendations' :
+             'Evaluation Documentation'}
           </span>
           <div className="flex items-center gap-2">
             <span className="badge badge-neutral">
-              {view === 'evaluation' ? 'Last 30 Days' : '10 Papers · 8 Gaps · 4 Platforms'}
+              {view === 'evaluation' ? 'Last 30 Days' :
+               view === 'research' ? 'Technical Insights' :
+               'Visual Guide'}
             </span>
           </div>
         </div>
         <div className="scroll-area">
-          {view === 'evaluation' ? <EvaluationOverview /> : <ResearchInsights />}
+          {view === 'evaluation' ? <EvaluationOverview /> :
+           view === 'research' ? <ResearchInsights /> :
+           <EvalDocs />}
         </div>
       </div>
     </div>
