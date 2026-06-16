@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
-import { BarChart3, Microscope, BookOpen } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { BarChart3, Microscope, BookOpen, Sun, Moon } from 'lucide-react';
 import EvaluationOverview from './components/EvaluationOverview';
 import ResearchInsights from './components/ResearchInsights';
 import EvalDocs from './components/EvalDocs';
 
 type View = 'evaluation' | 'research' | 'docs';
+type Theme = 'dark' | 'light';
 
 export default function App() {
   const [view, setView] = useState<View>('evaluation');
+  const [theme, setTheme] = useState<Theme>(() => {
+    const saved = localStorage.getItem('app-theme');
+    return (saved as Theme) || 'dark';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('app-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+  };
 
   return (
     <div className="app-shell">
@@ -60,12 +74,23 @@ export default function App() {
              view === 'research' ? 'Technical Insights & Recommendations' :
              'Evaluation Documentation'}
           </span>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <span className="badge badge-neutral">
               {view === 'evaluation' ? 'Last 30 Days' :
                view === 'research' ? 'Technical Insights' :
                'Visual Guide'}
             </span>
+            <button
+              onClick={toggleTheme}
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: 'var(--text-secondary)', padding: 4, borderRadius: 'var(--radius-sm)'
+              }}
+              title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            >
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
           </div>
         </div>
         <div className="scroll-area">

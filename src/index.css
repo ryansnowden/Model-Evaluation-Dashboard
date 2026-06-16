@@ -69,6 +69,63 @@
   --radius-xl: 20px;
 }
 
+[data-theme='light'] {
+  /* Surfaces */
+  --bg-void: #f8fafc;
+  --bg-primary: #ffffff;
+  --bg-surface: rgba(255, 255, 255, 0.85);
+  --bg-elevated: rgba(255, 255, 255, 0.95);
+  --bg-hover: rgba(241, 245, 249, 0.8);
+  --bg-active: rgba(226, 232, 240, 0.8);
+
+  /* Borders */
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border-default: rgba(0, 0, 0, 0.1);
+  --border-strong: rgba(0, 0, 0, 0.15);
+  --border-accent: rgba(79, 70, 229, 0.3);
+
+  /* Text */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-inverse: #ffffff;
+
+  /* Accent */
+  --accent: #4f46e5;
+  --accent-hover: #4338ca;
+  --accent-muted: rgba(79, 70, 229, 0.1);
+  --accent-glow: rgba(79, 70, 229, 0.05);
+
+  /* Semantic */
+  --color-pass: #059669;
+  --color-pass-muted: rgba(5, 150, 105, 0.1);
+  --color-fail: #dc2626;
+  --color-fail-muted: rgba(220, 38, 38, 0.1);
+  --color-warn: #d97706;
+  --color-warn-muted: rgba(217, 119, 6, 0.1);
+  --color-info: #2563eb;
+  --color-info-muted: rgba(37, 99, 235, 0.1);
+
+  /* Model Colors */
+  --model-baseline: #475569;
+  --model-a1: #0891b2;
+  --model-a2: #7c3aed;
+  --model-a3: #d97706;
+  --model-a4: #059669;
+
+  /* Confusion Matrix */
+  --color-tp: #059669;
+  --color-fp: #dc2626;
+  --color-fn: #d97706;
+  --color-tn: #475569;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-glow: 0 0 20px rgba(79, 70, 229, 0.15);
+}
+
 /* ── Reset ── */
 *, *::before, *::after {
   box-sizing: border-box;
