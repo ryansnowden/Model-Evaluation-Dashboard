@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import {
   BookOpen, BarChart3, AlertTriangle, Rocket, Database, Activity,
   Layers, Grid3X3, Target, ChevronDown, ChevronRight, ShieldAlert,
-  Search
+  Search, X, FileText
 } from 'lucide-react';
 import { mockTraces, mockModels, mockGates, mockCoverage } from '../data/index';
 import { IncidentTrace, ModelConfig } from '../types';
 import ModelComparisonStrip from './ModelComparisonStrip';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, ReferenceLine } from 'recharts';
 
 // Extracted granular subcomponents
 import { ConfusionMatricesPanel, ZoneTimeHeatmapPanel, ScenarioBarChartPanel } from './FailureAnalysis';
@@ -117,6 +118,28 @@ function DocSection({ number, title, icon, children, rows, defaultOpen = true }:
    TRACE DETAIL SUBCOMPONENTS
    ═══════════════════════════════════════════════════════════ */
 
+function TraceDetailHeader({ trace }: { trace: IncidentTrace }) {
+  return (
+    <div className="detail-header" style={{ position: 'static', borderBottom: 'none' }}>
+      <div>
+        <div className="font-mono font-bold" style={{ fontSize: 15 }}>{trace.trace_id}</div>
+        <div className="text-xs text-secondary" style={{ marginTop: 2 }}>
+          {trace.camera_id} · {trace.zone_type} · {trace.time_band}
+        </div>
+      </div>
+      <button
+        style={{
+          background: 'var(--bg-hover)', border: '1px solid var(--border-default)',
+          borderRadius: 'var(--radius-sm)', padding: '6px', cursor: 'pointer',
+          color: 'var(--text-secondary)', display: 'flex',
+        }}
+      >
+        <X size={16} />
+      </button>
+    </div>
+  );
+}
+
 function TraceContextAndTriage({ trace }: { trace: IncidentTrace }) {
   return (
     <div className="flex-col gap-4" style={{ background: 'var(--bg-elevated)', padding: 16, borderRadius: 8, border: '1px solid var(--border-strong)' }}>
@@ -184,6 +207,37 @@ function TracePipelineExecution({ trace }: { trace: IncidentTrace }) {
             </div>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+function TraceScoreTimeline({ trace }: { trace: IncidentTrace }) {
+  const timelineData = trace.score_raw.map((r, i) => ({
+    frame: i,
+    raw: r,
+    smooth: trace.score_smooth[i],
+  }));
+
+  return (
+    <div style={{ background: 'var(--bg-elevated)', padding: 16, borderRadius: 8, border: '1px solid var(--border-strong)' }}>
+      <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12 }}>
+        <Activity size={14} color="var(--text-secondary)" /> Score Timeline
+      </div>
+      <div style={{ height: 150 }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={timelineData} margin={{ top: 5, right: 5, left: -25, bottom: 5 }}>
+            <XAxis dataKey="frame" tick={false} axisLine={false} />
+            <YAxis domain={[0, 1]} tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+            <ReferenceLine y={trace.threshold} stroke="var(--color-fail)" strokeDasharray="4 4" strokeWidth={1} />
+            <Line type="monotone" dataKey="raw" stroke="var(--text-muted)" strokeWidth={1} dot={false} isAnimationActive={false} opacity={0.4} />
+            <Line type="monotone" dataKey="smooth" stroke="var(--accent)" strokeWidth={2} dot={false} isAnimationActive={false} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="flex justify-between text-xs" style={{ marginTop: 8 }}>
+        <span className="text-muted">Threshold: <span className="font-mono" style={{ color: 'var(--color-fail)' }}>{trace.threshold.toFixed(2)}</span></span>
+        <span className="text-muted">Peak: <span className="font-mono" style={{ color: 'var(--accent)' }}>{trace.anomaly_score.toFixed(2)}</span></span>
       </div>
     </div>
   );
@@ -415,9 +469,23 @@ export default function EvalDocs() {
         />
       </DocSection>
 
-      {/* ── Section 10: Trace Context & Triage ── */}
+      {/* ── Section 10: Trace Detail Header ── */}
       <DocSection
         number={10}
+        title="Trace Detail — Header"
+        icon={<FileText size={16} color="var(--accent)" />}
+        rows={[
+          { label: 'What it shows', content: 'The unique trace ID, camera ID, zone type, and time band of the incident.' },
+          { label: 'Why it exists', content: 'To uniquely identify the event and provide immediate spatial-temporal context.' },
+          { label: 'Close Button', content: 'The X button allows the operator to dismiss the detail slide-in panel.' },
+        ]}
+      >
+        <TraceDetailHeader trace={sampleTrace} />
+      </DocSection>
+
+      {/* ── Section 11: Trace Context & Triage ── */}
+      <DocSection
+        number={11}
         title="Trace Detail — Context"
         icon={<AlertTriangle size={16} color="var(--accent)" />}
         rows={[
@@ -429,9 +497,23 @@ export default function EvalDocs() {
         <TraceContextAndTriage trace={sampleTrace} />
       </DocSection>
 
-      {/* ── Section 11: Trace Pipeline Execution ── */}
+      {/* ── Section 12: Trace Score Timeline ── */}
       <DocSection
-        number={11}
+        number={12}
+        title="Trace Detail — Score Timeline"
+        icon={<Activity size={16} color="var(--accent)" />}
+        rows={[
+          { label: 'What it shows', content: 'A time series of the raw (grey) and smoothed (blue) anomaly scores for the duration of the trace, relative to the decision threshold (red dashed line).' },
+          { label: 'Why it exists', content: 'To understand the temporal dynamics of the model\'s confidence. Was it a sharp spike or a sustained anomaly?' },
+          { label: 'Score lines', content: 'The raw score shows the per-frame output. The smoothed line shows the temporal aggregation. If the smoothed line crosses the threshold, an alert is triggered.' },
+        ]}
+      >
+        <TraceScoreTimeline trace={sampleTrace} />
+      </DocSection>
+
+      {/* ── Section 13: Trace Pipeline Execution ── */}
+      <DocSection
+        number={13}
         title="Trace Detail — Pipeline Execution"
         icon={<Activity size={16} color="var(--accent)" />}
         rows={[
@@ -443,9 +525,9 @@ export default function EvalDocs() {
         <TracePipelineExecution trace={sampleTrace} />
       </DocSection>
 
-      {/* ── Section 12: Trace Model Scores ── */}
+      {/* ── Section 14: Trace Model Scores ── */}
       <DocSection
-        number={12}
+        number={14}
         title="Trace Detail — Model Scores"
         icon={<BarChart3 size={16} color="var(--accent)" />}
         rows={[
