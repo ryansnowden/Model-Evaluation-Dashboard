@@ -75,9 +75,9 @@ export default function TraceDetailPanel({ trace, models, onClose }: TraceDetail
           </div>
 
           {/* Score Timeline */}
-          <div>
+          <div data-testid="timeline-correlation">
             <div className="card-title">
-              <Activity size={14} /> Score Timeline
+              <Activity size={14} /> Score Timeline (Audio Frame Correlation)
             </div>
             <div style={{ height: 150 }}>
               <ResponsiveContainer width="100%" height="100%">
