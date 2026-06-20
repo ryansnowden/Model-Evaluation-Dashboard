@@ -225,9 +225,9 @@ export function ErrorBreakdownSummary({ traces }: { traces: IncidentTrace[] }) {
   const fnCount = traces.filter(t => t.tags.includes('false_negative')).length;
   
   return (
-    <div data-testid="error-breakdown-summary" className="card flex-1" style={{ padding: 16, minWidth: 250 }}>
-      <div className="card-title" style={{ marginBottom: 8 }}>Error Breakdown Summary</div>
-      <div className="flex gap-6">
+    <div data-testid="error-breakdown-summary" className="card" style={{ padding: '12px 20px', minWidth: 250 }}>
+      <div className="card-title" style={{ marginBottom: 6, fontSize: '0.85rem' }}>Error Breakdown Summary</div>
+      <div className="flex gap-8">
         <div className="flex flex-col">
           <span className="text-muted text-sm">Total Traces</span>
           <span className="font-semibold text-lg">{traces.length}</span>
@@ -261,25 +261,36 @@ export default function FailureAnalysis({ traces, models, selectedModels }: Fail
 
   return (
     <div className="flex-col gap-4">
-      <div className="flex gap-4 flex-wrap" style={{ alignItems: 'center', marginBottom: '1rem' }}>
+      <div className="flex justify-between items-center mb-4 w-full flex-wrap gap-4">
         <ErrorBreakdownSummary traces={traces} />
         
-        <div data-testid="category-filters" className="flex gap-2 items-center">
-          <span className="text-sm font-semibold">Category Filter:</span>
+        <div data-testid="category-filters" className="inline-flex p-1 rounded-lg border" style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
           <button 
-            className={`badge ${filter === 'all' ? 'badge-neutral' : ''}`}
+            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors hover:text-[var(--text-primary)]`}
+            style={{
+              background: filter === 'all' ? 'var(--bg-hover)' : 'transparent',
+              color: filter === 'all' ? 'var(--text-primary)' : 'var(--text-muted)'
+            }}
             onClick={() => setFilter('all')}
           >
             All Traces
           </button>
           <button 
-            className={`badge ${filter === 'fp' ? 'badge-fail' : ''}`}
+            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors hover:text-[var(--color-fail)]`}
+            style={{
+              background: filter === 'fp' ? 'var(--color-fail-muted)' : 'transparent',
+              color: filter === 'fp' ? 'var(--color-fail)' : 'var(--text-muted)'
+            }}
             onClick={() => setFilter('fp')}
           >
             False Positives
           </button>
           <button 
-            className={`badge ${filter === 'fn' ? 'badge-warn' : ''}`}
+            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors hover:text-[var(--color-warn)]`}
+            style={{
+              background: filter === 'fn' ? 'var(--color-warn-muted)' : 'transparent',
+              color: filter === 'fn' ? 'var(--color-warn)' : 'var(--text-muted)'
+            }}
             onClick={() => setFilter('fn')}
           >
             False Negatives
