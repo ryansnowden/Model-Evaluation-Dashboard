@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
@@ -221,25 +221,55 @@ export function ScenarioBarChartPanel({ traces, visibleModels }: { traces: Incid
 }
 
 export default function FailureAnalysis({ traces, models, selectedModels }: FailureAnalysisProps) {
+  const [filter, setFilter] = useState<string>('all');
+  
   const visibleModels = models.filter(m => selectedModels.includes(m.run_id));
   const candidateId = selectedModels[selectedModels.length - 1] || selectedModels[0];
   const candidateModel = models.find(m => m.run_id === candidateId);
 
+  const filteredTraces = useMemo(() => {
+    if (filter === 'all') return traces;
+    if (filter === 'fp') return traces.filter(t => t.tags.includes('false_positive'));
+    if (filter === 'fn') return traces.filter(t => t.tags.includes('false_negative'));
+    return traces;
+  }, [traces, filter]);
+
   return (
     <div className="flex-col gap-4">
+      <div data-testid="category-filters" className="flex gap-2" style={{ marginBottom: '1rem' }}>
+        <button 
+          className={`badge ${filter === 'all' ? 'badge-neutral' : ''}`}
+          onClick={() => setFilter('all')}
+        >
+          All Traces
+        </button>
+        <button 
+          className={`badge ${filter === 'fp' ? 'badge-fail' : ''}`}
+          onClick={() => setFilter('fp')}
+        >
+          False Positives
+        </button>
+        <button 
+          className={`badge ${filter === 'fn' ? 'badge-warn' : ''}`}
+          onClick={() => setFilter('fn')}
+        >
+          False Negatives
+        </button>
+      </div>
+
       <div className="flex gap-4" style={{ alignItems: 'flex-start' }}>
         {/* Confusion Matrices */}
-        <ConfusionMatricesPanel traces={traces} visibleModels={visibleModels} />
+        <ConfusionMatricesPanel traces={filteredTraces} visibleModels={visibleModels} />
       </div>
 
       <div className="flex gap-4" style={{ alignItems: 'flex-start' }}>
         {/* Zone × Time Heatmap */}
         {candidateModel && (
-          <ZoneTimeHeatmapPanel traces={traces} candidateModel={candidateModel} candidateId={candidateId} />
+          <ZoneTimeHeatmapPanel traces={filteredTraces} candidateModel={candidateModel} candidateId={candidateId} />
         )}
         
         {/* Scenario F1 Bar Chart */}
-        <ScenarioBarChartPanel traces={traces} visibleModels={visibleModels} />
+        <ScenarioBarChartPanel traces={filteredTraces} visibleModels={visibleModels} />
       </div>
     </div>
   );
