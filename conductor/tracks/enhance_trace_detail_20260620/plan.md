@@ -10,10 +10,10 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Trace Detail Panel Enhancements' (Protocol in workflow.md)
 
 ## Phase 2: Failure Analysis View Enhancements
-- [ ] Task: Implement interactive category filters
-    - [ ] Sub-task: Write Tests for failure category filters
-    - [ ] Sub-task: Implement failure category filters in FailureAnalysis component
-- [ ] Task: Update error breakdown visualization
+- [x] Task: Implement interactive category filters 5400500
+    - [x] Sub-task: Write Tests for failure category filters
+    - [x] Sub-task: Implement failure category filters in FailureAnalysis component
+- [~] Task: Update error breakdown visualization
     - [ ] Sub-task: Write Tests for error breakdown UI updates
     - [ ] Sub-task: Implement error breakdown UI updates
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Failure Analysis View Enhancements' (Protocol in workflow.md)
