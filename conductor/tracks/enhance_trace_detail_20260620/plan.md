@@ -1,9 +1,9 @@
 # Implementation Plan: Enhance Trace Detail panel and Failure Analysis views
 
 ## Phase 1: Trace Detail Panel Enhancements
-- [ ] Task: Update TraceDetailPanel component structure
-    - [ ] Sub-task: Write Tests for TraceDetailPanel timeline view
-    - [ ] Sub-task: Implement TraceDetailPanel timeline view
+- [x] Task: Update TraceDetailPanel component structure 6f402cd
+    - [x] Sub-task: Write Tests for TraceDetailPanel timeline view
+    - [x] Sub-task: Implement TraceDetailPanel timeline view
 - [ ] Task: Refactor audio frame and VAD trigger alignment logic
     - [ ] Sub-task: Write Tests for audio/trigger alignment utilities
     - [ ] Sub-task: Implement audio/trigger alignment utilities
