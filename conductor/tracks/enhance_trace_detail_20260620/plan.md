@@ -4,9 +4,9 @@
 - [x] Task: Update TraceDetailPanel component structure 6f402cd
     - [x] Sub-task: Write Tests for TraceDetailPanel timeline view
     - [x] Sub-task: Implement TraceDetailPanel timeline view
-- [ ] Task: Refactor audio frame and VAD trigger alignment logic
-    - [ ] Sub-task: Write Tests for audio/trigger alignment utilities
-    - [ ] Sub-task: Implement audio/trigger alignment utilities
+- [x] Task: Refactor audio frame and VAD trigger alignment logic 5d60397
+    - [x] Sub-task: Write Tests for audio/trigger alignment utilities
+    - [x] Sub-task: Implement audio/trigger alignment utilities
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Trace Detail Panel Enhancements' (Protocol in workflow.md)
 
 ## Phase 2: Failure Analysis View Enhancements
