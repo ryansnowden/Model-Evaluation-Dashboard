@@ -61,73 +61,75 @@ export default function ModelComparisonStrip({ models, selectedModels, onToggleM
 
       {/* Comparison Table */}
       <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-        <table>
-          <thead>
-            <tr>
-              <th style={{ paddingLeft: 16 }}>Model</th>
-              {METRICS.map(m => (
-                <th key={m.key} style={{ textAlign: 'right' }}>{m.label}</th>
-              ))}
-              <th style={{ textAlign: 'center' }}>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {visibleModels.map(model => (
-              <tr key={model.run_id} className={model.is_candidate ? 'row-highlight' : ''}>
-                <td style={{ paddingLeft: 16 }}>
-                  <div className="flex items-center gap-2">
-                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: model.color, flexShrink: 0 }} />
-                    <span className="font-semibold text-sm">{model.name}</span>
-                    {model.is_candidate && (
-                      <span className="badge badge-pass" style={{ fontSize: 9, padding: '1px 5px' }}>candidate</span>
-                    )}
-                  </div>
-                </td>
-                {METRICS.map(metric => {
-                  const val = model[metric.key] as number;
-                  const isWinner = winners[metric.key] === model.run_id && visibleModels.length > 1;
-                  const baseVal = baseline ? baseline[metric.key] as number : null;
-                  const delta = baseVal !== null ? val - baseVal : null;
-                  const isImproved = delta !== null && (metric.lowerIsBetter ? delta < -0.001 : delta > 0.001);
-                  const isRegressed = delta !== null && (metric.lowerIsBetter ? delta > 0.001 : delta < -0.001);
-
-                  return (
-                    <td key={metric.key} style={{ textAlign: 'right' }}>
-                      <div className="flex items-center justify-end gap-2">
-                        {/* Delta vs baseline */}
-                        {delta !== null && model.run_id !== 'run-baseline' && (
-                          <span className={`metric-delta ${isImproved ? 'positive' : isRegressed ? 'negative' : 'neutral'}`}>
-                            {metric.lowerIsBetter
-                              ? (delta > 0 ? '+' : '') + delta.toFixed(1)
-                              : (delta > 0 ? '+' : '') + (delta * (metric.key === 'far_per_100h' ? 1 : 100)).toFixed(1)
-                            }
-                          </span>
-                        )}
-                        <span
-                          className="font-mono font-semibold"
-                          style={{
-                            fontSize: 13,
-                            padding: isWinner ? '2px 6px' : undefined,
-                            borderRadius: isWinner ? 'var(--radius-sm)' : undefined,
-                            background: isWinner ? 'var(--color-pass-muted)' : undefined,
-                            color: isWinner ? 'var(--color-pass)' : 'var(--text-primary)',
-                          }}
-                        >
-                          {metric.format(val)}
-                        </span>
-                      </div>
-                    </td>
-                  );
-                })}
-                <td style={{ textAlign: 'center' }}>
-                  <span className={`badge ${model.status === 'completed' ? 'badge-pass' : model.status === 'running' ? 'badge-info' : 'badge-fail'}`}>
-                    {model.status}
-                  </span>
-                </td>
+        <div className="table-scroll-container">
+          <table>
+            <thead>
+              <tr>
+                <th style={{ paddingLeft: 16 }}>Model</th>
+                {METRICS.map(m => (
+                  <th key={m.key} style={{ textAlign: 'right' }}>{m.label}</th>
+                ))}
+                <th style={{ textAlign: 'center' }}>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {visibleModels.map(model => (
+                <tr key={model.run_id} className={model.is_candidate ? 'row-highlight' : ''}>
+                  <td style={{ paddingLeft: 16 }}>
+                    <div className="flex items-center gap-2">
+                      <span style={{ width: 8, height: 8, borderRadius: '50%', background: model.color, flexShrink: 0 }} />
+                      <span className="font-semibold text-sm">{model.name}</span>
+                      {model.is_candidate && (
+                        <span className="badge badge-pass" style={{ fontSize: 9, padding: '1px 5px' }}>candidate</span>
+                      )}
+                    </div>
+                  </td>
+                  {METRICS.map(metric => {
+                    const val = model[metric.key] as number;
+                    const isWinner = winners[metric.key] === model.run_id && visibleModels.length > 1;
+                    const baseVal = baseline ? baseline[metric.key] as number : null;
+                    const delta = baseVal !== null ? val - baseVal : null;
+                    const isImproved = delta !== null && (metric.lowerIsBetter ? delta < -0.001 : delta > 0.001);
+                    const isRegressed = delta !== null && (metric.lowerIsBetter ? delta > 0.001 : delta < -0.001);
+
+                    return (
+                      <td key={metric.key} style={{ textAlign: 'right' }}>
+                        <div className="flex items-center justify-end gap-2">
+                          {/* Delta vs baseline */}
+                          {delta !== null && model.run_id !== 'run-baseline' && (
+                            <span className={`metric-delta ${isImproved ? 'positive' : isRegressed ? 'negative' : 'neutral'}`}>
+                              {metric.lowerIsBetter
+                                ? (delta > 0 ? '+' : '') + delta.toFixed(1)
+                                : (delta > 0 ? '+' : '') + (delta * (metric.key === 'far_per_100h' ? 1 : 100)).toFixed(1)
+                              }
+                            </span>
+                          )}
+                          <span
+                            className="font-mono font-semibold"
+                            style={{
+                              fontSize: 13,
+                              padding: isWinner ? '2px 6px' : undefined,
+                              borderRadius: isWinner ? 'var(--radius-sm)' : undefined,
+                              background: isWinner ? 'var(--color-pass-muted)' : undefined,
+                              color: isWinner ? 'var(--color-pass)' : 'var(--text-primary)',
+                            }}
+                          >
+                            {metric.format(val)}
+                          </span>
+                        </div>
+                      </td>
+                    );
+                  })}
+                  <td style={{ textAlign: 'center' }}>
+                    <span className={`badge ${model.status === 'completed' ? 'badge-pass' : model.status === 'running' ? 'badge-info' : 'badge-fail'}`}>
+                      {model.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

@@ -273,7 +273,7 @@ export default function ResearchInsights() {
     <div className="flex-col gap-6" style={{ paddingBottom: 32 }}>
 
       {/* ── Section 1: Research Maturity Radar ── */}
-      <section>
+      <section id="capability-radar">
         <div className="section-header">
           <div>
             <div className="flex items-center gap-2">
@@ -351,7 +351,7 @@ export default function ResearchInsights() {
       </section>
 
       {/* ── Section 2: Gap Analysis & Recommendations ── */}
-      <section>
+      <section id="gap-analysis">
         <div className="section-header">
           <div>
             <div className="flex items-center gap-2">
@@ -435,7 +435,7 @@ export default function ResearchInsights() {
       </section>
 
       {/* ── Section 3: Benchmark Landscape ── */}
-      <section>
+      <section id="benchmark-landscape">
         <div className="section-header">
           <div>
             <div className="flex items-center gap-2">
@@ -517,7 +517,7 @@ export default function ResearchInsights() {
       </section>
 
       {/* ── Section 4: Case Studies ── */}
-      <section>
+      <section id="case-studies">
         <div className="section-header">
           <div>
             <div className="flex items-center gap-2">
@@ -628,7 +628,7 @@ export default function ResearchInsights() {
       </section>
 
       {/* ── Section 5: Edge Hardware Readiness ── */}
-      <section>
+      <section id="edge-hardware">
         <div className="section-header">
           <div>
             <div className="flex items-center gap-2">
@@ -639,6 +639,7 @@ export default function ResearchInsights() {
           </div>
         </div>
         <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+          <div className="table-scroll-container">
           <table>
             <thead>
               <tr>
@@ -694,6 +695,7 @@ export default function ResearchInsights() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
 
         {/* FPS threshold guidance */}
@@ -729,7 +731,7 @@ export default function ResearchInsights() {
       </section>
 
       {/* ── Section 6: Technical Literature ── */}
-      <section>
+      <section id="technical-literature">
         <div className="section-header">
           <div>
             <div className="flex items-center gap-2">
@@ -832,7 +834,7 @@ export default function ResearchInsights() {
       </section>
 
       {/* ── Section 7: Evaluation Methodology Critique ── */}
-      <section>
+      <section id="eval-methodology">
         <div className="section-header">
           <div>
             <div className="flex items-center gap-2">
@@ -915,7 +917,7 @@ export default function ResearchInsights() {
       </section>
 
       {/* ── Section 8: Adoption Roadmap ── */}
-      <section>
+      <section id="adoption-roadmap">
         <div className="section-header">
           <div>
             <div className="flex items-center gap-2">

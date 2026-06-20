@@ -264,36 +264,27 @@ export default function FailureAnalysis({ traces, models, selectedModels }: Fail
       <div className="flex justify-between items-center mb-4 w-full flex-wrap gap-4">
         <ErrorBreakdownSummary traces={traces} />
         
-        <div data-testid="category-filters" className="inline-flex p-1 rounded-lg border" style={{ background: 'var(--bg-elevated)', borderColor: 'var(--border-subtle)' }}>
+        <div data-testid="category-filters" className="flex items-center gap-2">
           <button 
-            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors hover:text-[var(--text-primary)]`}
-            style={{
-              background: filter === 'all' ? 'var(--bg-hover)' : 'transparent',
-              color: filter === 'all' ? 'var(--text-primary)' : 'var(--text-muted)'
-            }}
+            className={`filter-pill ${filter === 'all' ? 'active' : ''}`}
             onClick={() => setFilter('all')}
           >
             All Traces
+            <span className="pill-count">{traces.length}</span>
           </button>
           <button 
-            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors hover:text-[var(--color-fail)]`}
-            style={{
-              background: filter === 'fp' ? 'var(--color-fail-muted)' : 'transparent',
-              color: filter === 'fp' ? 'var(--color-fail)' : 'var(--text-muted)'
-            }}
+            className={`filter-pill filter-pill--fail ${filter === 'fp' ? 'active' : ''}`}
             onClick={() => setFilter('fp')}
           >
             False Positives
+            <span className="pill-count">{traces.filter(t => t.tags.includes('false_positive')).length}</span>
           </button>
           <button 
-            className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors hover:text-[var(--color-warn)]`}
-            style={{
-              background: filter === 'fn' ? 'var(--color-warn-muted)' : 'transparent',
-              color: filter === 'fn' ? 'var(--color-warn)' : 'var(--text-muted)'
-            }}
+            className={`filter-pill filter-pill--warn ${filter === 'fn' ? 'active' : ''}`}
             onClick={() => setFilter('fn')}
           >
             False Negatives
+            <span className="pill-count">{traces.filter(t => t.tags.includes('false_negative')).length}</span>
           </button>
         </div>
       </div>

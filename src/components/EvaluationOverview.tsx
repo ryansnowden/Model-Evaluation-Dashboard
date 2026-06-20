@@ -29,14 +29,14 @@ export default function EvaluationOverview() {
     <>
       <div className="flex-col gap-8" style={{ paddingBottom: 40 }}>
         {/* Section A: Model Comparison */}
-        <section>
+        <section id="model-comparison">
           <div className="section-header">
             <div>
               <div className="flex items-center gap-2">
                 <BarChart3 size={16} color="var(--accent)" />
-                <h2 className="section-title">Model Comparison</h2>
+                <h2 className="section-title">Model Performance Comparison</h2>
               </div>
-              <p className="section-subtitle">Select models to compare. Winner highlighted per metric.</p>
+              <p className="section-subtitle">Compare metrics across all model iterations — best-in-class values highlighted in green.</p>
             </div>
           </div>
           <ModelComparisonStrip
@@ -46,15 +46,15 @@ export default function EvaluationOverview() {
           />
         </section>
 
-        {/* Section B: Where It Fails */}
-        <section>
+        {/* Section B: Error Analysis */}
+        <section id="error-analysis">
           <div className="section-header">
             <div>
               <div className="flex items-center gap-2">
                 <AlertTriangle size={16} color="var(--color-warn)" />
-                <h2 className="section-title">Where It Fails</h2>
+                <h2 className="section-title">Error Analysis & Failure Modes</h2>
               </div>
-              <p className="section-subtitle">Confusion matrices, zone × time performance heatmap, and F1 by scenario.</p>
+              <p className="section-subtitle">Diagnose where and when models underperform — broken down by error type, zone, time, and scenario.</p>
             </div>
           </div>
           <FailureAnalysis
@@ -65,14 +65,14 @@ export default function EvaluationOverview() {
         </section>
 
         {/* Section C: Deployment Gates */}
-        <section>
+        <section id="deployment-gates">
           <div className="section-header">
             <div>
               <div className="flex items-center gap-2">
                 <Rocket size={16} color="var(--color-pass)" />
-                <h2 className="section-title">Deployment Gates</h2>
+                <h2 className="section-title">Production Readiness Gates</h2>
               </div>
-              <p className="section-subtitle">Ship/no-ship decision with gate checklist and data coverage.</p>
+              <p className="section-subtitle">Automated ship/no-ship verdict — every gate must pass before the candidate model goes live.</p>
             </div>
           </div>
           <DeploymentGates
@@ -82,14 +82,14 @@ export default function EvaluationOverview() {
         </section>
 
         {/* Section D: Anomaly Evidence */}
-        <section>
+        <section id="anomaly-evidence">
           <div className="section-header">
             <div>
               <div className="flex items-center gap-2">
                 <Database size={16} color="var(--accent)" />
-                <h2 className="section-title">Anomaly Evidence</h2>
+                <h2 className="section-title">Trace-Level Evidence</h2>
               </div>
-              <p className="section-subtitle">Click any trace to inspect per-model scores, pipeline, and triage.</p>
+              <p className="section-subtitle">Drill into individual traces to inspect model agreement, scores, and operator decisions.</p>
             </div>
           </div>
           <div className="card" style={{ padding: 16 }}>

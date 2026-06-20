@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-- [ ] **Track: Enhance Trace Detail panel and Failure Analysis views**
+- [~] **Track: Enhance Trace Detail panel and Failure Analysis views**
   *Link: [./tracks/enhance_trace_detail_20260620/](./tracks/enhance_trace_detail_20260620/)*
