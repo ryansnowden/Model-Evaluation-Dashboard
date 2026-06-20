@@ -67,7 +67,7 @@ export function ConfusionMatricesPanel({ traces, visibleModels }: { traces: Inci
   );
 }
 
-export function ZoneTimeHeatmapPanel({ traces, candidateModel, candidateId }: { traces: IncidentTrace[], candidateModel: ModelConfig, candidateId: string }) {
+export function ZoneTimeHeatmapPanel({ traces, candidateModel, candidateId, filter }: { traces: IncidentTrace[], candidateModel: ModelConfig, candidateId: string, filter: string }) {
   const zones = useMemo(() => Array.from(new Set(traces.map(t => t.zone_type))), [traces]);
   const timeBands = useMemo(() => Array.from(new Set(traces.map(t => t.time_band))), [traces]);
 
@@ -78,34 +78,56 @@ export function ZoneTimeHeatmapPanel({ traces, candidateModel, candidateId }: { 
       timeBands.forEach(band => {
         const subset = traces.filter(t => t.zone_type === zone && t.time_band === band);
         const { tp, fp, fn } = computeConfusion(subset, candidateId);
-        const precision = tp + fp > 0 ? tp / (tp + fp) : 0;
-        const recall = tp + fn > 0 ? tp / (tp + fn) : 0;
-        const f1 = precision + recall > 0 ? 2 * precision * recall / (precision + recall) : 0;
-        row[band] = f1;
+        
+        if (filter === 'all') {
+          const precision = tp + fp > 0 ? tp / (tp + fp) : 0;
+          const recall = tp + fn > 0 ? tp / (tp + fn) : 0;
+          row[band] = precision + recall > 0 ? 2 * precision * recall / (precision + recall) : 0;
+        } else if (filter === 'fp') {
+          row[band] = fp;
+        } else if (filter === 'fn') {
+          row[band] = fn;
+        }
         row[`${band}_count`] = subset.length;
       });
       return row;
     });
-  }, [traces, candidateId, zones, timeBands]);
+  }, [traces, candidateId, zones, timeBands, filter]);
 
-  const getHeatColor = (f1: number): string => {
-    if (f1 >= 0.85) return 'var(--color-pass)';
-    if (f1 >= 0.70) return 'var(--color-warn)';
-    if (f1 >= 0.40) return 'var(--color-fail)';
-    return 'var(--text-muted)';
+  const isCount = filter !== 'all';
+
+  const getHeatColor = (val: number): string => {
+    if (!isCount) {
+      if (val >= 0.85) return 'var(--color-pass)';
+      if (val >= 0.70) return 'var(--color-warn)';
+      if (val >= 0.40) return 'var(--color-fail)';
+      return 'var(--text-muted)';
+    } else {
+      if (val === 0) return 'var(--text-muted)';
+      if (val <= 2) return 'var(--color-warn)';
+      return 'var(--color-fail)';
+    }
   };
 
-  const getHeatBg = (f1: number): string => {
-    if (f1 >= 0.85) return 'var(--color-pass-muted)';
-    if (f1 >= 0.70) return 'var(--color-warn-muted)';
-    if (f1 >= 0.40) return 'var(--color-fail-muted)';
-    return 'var(--bg-hover)';
+  const getHeatBg = (val: number): string => {
+    if (!isCount) {
+      if (val >= 0.85) return 'var(--color-pass-muted)';
+      if (val >= 0.70) return 'var(--color-warn-muted)';
+      if (val >= 0.40) return 'var(--color-fail-muted)';
+      return 'var(--bg-hover)';
+    } else {
+      if (val === 0) return 'var(--bg-hover)';
+      if (val <= 2) return 'var(--color-warn-muted)';
+      return 'var(--color-fail-muted)';
+    }
   };
+
+  const titlePrefix = filter === 'all' ? 'Zone × Time F1' : filter === 'fp' ? 'Zone × Time False Positives' : 'Zone × Time False Negatives';
 
   return (
     <div className="card flex-1" style={{ padding: 16 }}>
       <div className="card-title">
-        Zone × Time F1 — {candidateModel?.short_name || 'N/A'}
+        {titlePrefix} — {candidateModel?.short_name || 'N/A'}
       </div>
       <div style={{ overflowX: 'auto' }}>
         <table style={{ borderCollapse: 'separate', borderSpacing: 3 }}>
@@ -126,19 +148,21 @@ export function ZoneTimeHeatmapPanel({ traces, candidateModel, candidateId }: { 
                   {row.zone}
                 </td>
                 {timeBands.map(band => {
-                  const f1 = row[band] as number;
+                  const val = row[band] as number;
                   const count = row[`${band}_count`] as number;
+                  const displayVal = isCount ? val : (count > 0 ? (val * 100).toFixed(0) : '—');
+                  
                   return (
                     <td key={band} style={{ border: 'none', padding: 0 }}>
                       <div
                         className="heatmap-cell"
                         style={{
-                          background: count > 0 ? getHeatBg(f1) : 'var(--bg-hover)',
-                          color: count > 0 ? getHeatColor(f1) : 'var(--text-muted)',
+                          background: (isCount && val > 0) || (!isCount && count > 0) ? getHeatBg(val) : 'var(--bg-hover)',
+                          color: (isCount && val > 0) || (!isCount && count > 0) ? getHeatColor(val) : 'var(--text-muted)',
                         }}
-                        title={`${row.zone} / ${band}: F1=${f1.toFixed(2)}, n=${count}`}
+                        title={isCount ? `${row.zone} / ${band}: ${val} ${filter === 'fp' ? 'False Positives' : 'False Negatives'}` : `${row.zone} / ${band}: F1=${val.toFixed(2)}, n=${count}`}
                       >
-                        {count > 0 ? (f1 * 100).toFixed(0) : '—'}
+                        {displayVal}
                       </div>
                     </td>
                   );
@@ -149,22 +173,39 @@ export function ZoneTimeHeatmapPanel({ traces, candidateModel, candidateId }: { 
         </table>
       </div>
       <div className="flex gap-3 items-center" style={{ marginTop: 8 }}>
-        <span className="text-muted" style={{ fontSize: 10 }}>F1 Score:</span>
-        <span className="flex items-center gap-1" style={{ fontSize: 10 }}>
-          <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--color-pass-muted)', border: '1px solid rgba(16,185,129,0.3)' }} /> ≥85
-        </span>
-        <span className="flex items-center gap-1" style={{ fontSize: 10 }}>
-          <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--color-warn-muted)', border: '1px solid rgba(245,158,11,0.3)' }} /> 70-84
-        </span>
-        <span className="flex items-center gap-1" style={{ fontSize: 10 }}>
-          <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--color-fail-muted)', border: '1px solid rgba(239,68,68,0.3)' }} /> &lt;70
-        </span>
+        {!isCount ? (
+          <>
+            <span className="text-muted" style={{ fontSize: 10 }}>F1 Score:</span>
+            <span className="flex items-center gap-1" style={{ fontSize: 10 }}>
+              <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--color-pass-muted)', border: '1px solid rgba(16,185,129,0.3)' }} /> ≥85
+            </span>
+            <span className="flex items-center gap-1" style={{ fontSize: 10 }}>
+              <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--color-warn-muted)', border: '1px solid rgba(245,158,11,0.3)' }} /> 70-84
+            </span>
+            <span className="flex items-center gap-1" style={{ fontSize: 10 }}>
+              <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--color-fail-muted)', border: '1px solid rgba(239,68,68,0.3)' }} /> &lt;70
+            </span>
+          </>
+        ) : (
+          <>
+            <span className="text-muted" style={{ fontSize: 10 }}>Error Count:</span>
+            <span className="flex items-center gap-1" style={{ fontSize: 10 }}>
+              <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--bg-hover)', border: '1px solid var(--border-default)' }} /> 0
+            </span>
+            <span className="flex items-center gap-1" style={{ fontSize: 10 }}>
+              <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--color-warn-muted)', border: '1px solid rgba(245,158,11,0.3)' }} /> 1-2
+            </span>
+            <span className="flex items-center gap-1" style={{ fontSize: 10 }}>
+              <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--color-fail-muted)', border: '1px solid rgba(239,68,68,0.3)' }} /> 3+
+            </span>
+          </>
+        )}
       </div>
     </div>
   );
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label, isCount }: any) => {
   if (!active || !payload?.length) return null;
   return (
     <div style={{
@@ -176,14 +217,14 @@ const CustomTooltip = ({ active, payload, label }: any) => {
         <div key={entry.name} className="flex items-center gap-2" style={{ marginBottom: 2 }}>
           <span style={{ width: 8, height: 8, borderRadius: '50%', background: entry.color, display: 'inline-block' }} />
           <span className="text-secondary">{entry.name}:</span>
-          <span className="font-mono font-semibold">{entry.value}%</span>
+          <span className="font-mono font-semibold">{entry.value}{!isCount && '%'}</span>
         </div>
       ))}
     </div>
   );
 };
 
-export function ScenarioBarChartPanel({ traces, visibleModels }: { traces: IncidentTrace[], visibleModels: ModelConfig[] }) {
+export function ScenarioBarChartPanel({ traces, visibleModels, filter }: { traces: IncidentTrace[], visibleModels: ModelConfig[], filter: string }) {
   const scenarioData = useMemo(() => {
     const scenarios = Array.from(new Set(traces.map(t => t.scenario_label)));
     return scenarios.map(scenario => {
@@ -191,25 +232,47 @@ export function ScenarioBarChartPanel({ traces, visibleModels }: { traces: Incid
       visibleModels.forEach(m => {
         const scenTraces = traces.filter(t => t.scenario_label === scenario);
         const { tp, fp, fn } = computeConfusion(scenTraces, m.run_id);
-        const precision = tp + fp > 0 ? tp / (tp + fp) : 0;
-        const recall = tp + fn > 0 ? tp / (tp + fn) : 0;
-        const f1 = precision + recall > 0 ? 2 * precision * recall / (precision + recall) : 0;
-        row[m.short_name] = Math.round(f1 * 100);
+        
+        if (filter === 'all') {
+          const precision = tp + fp > 0 ? tp / (tp + fp) : 0;
+          const recall = tp + fn > 0 ? tp / (tp + fn) : 0;
+          row[m.short_name] = Math.round((precision + recall > 0 ? 2 * precision * recall / (precision + recall) : 0) * 100);
+        } else if (filter === 'fp') {
+          row[m.short_name] = fp;
+        } else if (filter === 'fn') {
+          row[m.short_name] = fn;
+        }
       });
       return row;
     });
-  }, [traces, visibleModels]);
+  }, [traces, visibleModels, filter]);
+
+  const isCount = filter !== 'all';
+  const title = filter === 'all' ? 'F1 by Scenario' : filter === 'fp' ? 'False Positives by Scenario' : 'False Negatives by Scenario';
+  
+  // Calculate max domain for count display
+  const maxDomain = useMemo(() => {
+    if (!isCount) return 100;
+    let max = 0;
+    scenarioData.forEach(row => {
+      visibleModels.forEach(m => {
+        if (row[m.short_name] > max) max = row[m.short_name];
+      });
+    });
+    // Add some padding to max, at least 10 to show a nice scale
+    return Math.max(10, Math.ceil(max * 1.2));
+  }, [scenarioData, visibleModels, isCount]);
 
   return (
     <div className="card flex-1" style={{ padding: 16 }}>
-      <div className="card-title">F1 by Scenario</div>
+      <div className="card-title">{title}</div>
       <div style={{ height: 220 }}>
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={scenarioData} layout="vertical" margin={{ top: 5, right: 20, left: 10, bottom: 5 }} barGap={2}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" horizontal={false} />
-            <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+            <XAxis type="number" domain={[0, maxDomain]} tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
             <YAxis dataKey="scenario" type="category" tick={{ fontSize: 10, fill: 'var(--text-secondary)' }} axisLine={false} tickLine={false} width={110} />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<CustomTooltip isCount={isCount} />} />
             {visibleModels.map(m => (
               <Bar key={m.run_id} dataKey={m.short_name} fill={m.color} radius={[0, 3, 3, 0]} barSize={8} />
             ))}
@@ -220,27 +283,62 @@ export function ScenarioBarChartPanel({ traces, visibleModels }: { traces: Incid
   );
 }
 
-export function ErrorBreakdownSummary({ traces }: { traces: IncidentTrace[] }) {
+export function ErrorBreakdownFilters({ traces, filter, onFilterChange }: { traces: IncidentTrace[], filter: string, onFilterChange: (f: string) => void }) {
   const fpCount = traces.filter(t => t.tags.includes('false_positive')).length;
   const fnCount = traces.filter(t => t.tags.includes('false_negative')).length;
   
   return (
-    <div data-testid="error-breakdown-summary" className="card" style={{ padding: '12px 20px', minWidth: 250 }}>
-      <div className="card-title" style={{ marginBottom: 6, fontSize: '0.85rem' }}>Error Breakdown Summary</div>
-      <div className="flex gap-8">
-        <div className="flex flex-col">
-          <span className="text-muted text-sm">Total Traces</span>
-          <span className="font-semibold text-lg">{traces.length}</span>
-        </div>
-        <div className="flex flex-col">
-          <span className="text-sm" style={{ color: 'var(--color-fail)' }}>False Positives</span>
-          <span className="font-semibold text-lg">{fpCount}</span>
-        </div>
-        <div className="flex flex-col">
-          <span className="text-sm" style={{ color: 'var(--color-warn)' }}>False Negatives</span>
-          <span className="font-semibold text-lg">{fnCount}</span>
-        </div>
-      </div>
+    <div className="flex gap-4 w-full mb-6 mt-2">
+      <button 
+        data-testid="filter-all"
+        className="card flex-1 flex flex-col items-start justify-center transition-all duration-200"
+        style={{ 
+          padding: '16px 20px', 
+          cursor: 'pointer', 
+          border: filter === 'all' ? '1px solid var(--accent)' : '1px solid var(--border-default)',
+          background: filter === 'all' ? 'var(--accent-muted)' : 'var(--bg-surface)',
+        }}
+        onClick={() => onFilterChange('all')}
+        onMouseEnter={(e) => { if (filter !== 'all') e.currentTarget.style.background = 'var(--bg-hover)'; }}
+        onMouseLeave={(e) => { if (filter !== 'all') e.currentTarget.style.background = 'var(--bg-surface)'; }}
+      >
+        <span className="text-muted text-xs font-semibold tracking-wider uppercase mb-1">Total Traces</span>
+        <span className="font-semibold text-3xl">{traces.length}</span>
+      </button>
+
+      <button 
+        data-testid="filter-fp"
+        className="card flex-1 flex flex-col items-start justify-center transition-all duration-200"
+        style={{ 
+          padding: '16px 20px', 
+          cursor: 'pointer', 
+          border: filter === 'fp' ? '1px solid var(--color-fail)' : '1px solid var(--border-default)',
+          background: filter === 'fp' ? 'var(--color-fail-muted)' : 'var(--bg-surface)',
+        }}
+        onClick={() => onFilterChange('fp')}
+        onMouseEnter={(e) => { if (filter !== 'fp') e.currentTarget.style.background = 'var(--bg-hover)'; }}
+        onMouseLeave={(e) => { if (filter !== 'fp') e.currentTarget.style.background = 'var(--bg-surface)'; }}
+      >
+        <span className="text-xs font-semibold tracking-wider uppercase mb-1" style={{ color: 'var(--color-fail)' }}>False Positives</span>
+        <span className="font-semibold text-3xl" style={{ color: filter === 'fp' ? 'var(--text-primary)' : 'var(--text-primary)' }}>{fpCount}</span>
+      </button>
+
+      <button 
+        data-testid="filter-fn"
+        className="card flex-1 flex flex-col items-start justify-center transition-all duration-200"
+        style={{ 
+          padding: '16px 20px', 
+          cursor: 'pointer', 
+          border: filter === 'fn' ? '1px solid var(--color-warn)' : '1px solid var(--border-default)',
+          background: filter === 'fn' ? 'var(--color-warn-muted)' : 'var(--bg-surface)',
+        }}
+        onClick={() => onFilterChange('fn')}
+        onMouseEnter={(e) => { if (filter !== 'fn') e.currentTarget.style.background = 'var(--bg-hover)'; }}
+        onMouseLeave={(e) => { if (filter !== 'fn') e.currentTarget.style.background = 'var(--bg-surface)'; }}
+      >
+        <span className="text-xs font-semibold tracking-wider uppercase mb-1" style={{ color: 'var(--color-warn)' }}>False Negatives</span>
+        <span className="font-semibold text-3xl" style={{ color: filter === 'fn' ? 'var(--text-primary)' : 'var(--text-primary)' }}>{fnCount}</span>
+      </button>
     </div>
   );
 }
@@ -261,33 +359,7 @@ export default function FailureAnalysis({ traces, models, selectedModels }: Fail
 
   return (
     <div className="flex-col gap-4">
-      <div className="flex justify-between items-center mb-4 w-full flex-wrap gap-4">
-        <ErrorBreakdownSummary traces={traces} />
-        
-        <div data-testid="category-filters" className="flex items-center gap-2">
-          <button 
-            className={`filter-pill ${filter === 'all' ? 'active' : ''}`}
-            onClick={() => setFilter('all')}
-          >
-            All Traces
-            <span className="pill-count">{traces.length}</span>
-          </button>
-          <button 
-            className={`filter-pill filter-pill--fail ${filter === 'fp' ? 'active' : ''}`}
-            onClick={() => setFilter('fp')}
-          >
-            False Positives
-            <span className="pill-count">{traces.filter(t => t.tags.includes('false_positive')).length}</span>
-          </button>
-          <button 
-            className={`filter-pill filter-pill--warn ${filter === 'fn' ? 'active' : ''}`}
-            onClick={() => setFilter('fn')}
-          >
-            False Negatives
-            <span className="pill-count">{traces.filter(t => t.tags.includes('false_negative')).length}</span>
-          </button>
-        </div>
-      </div>
+      <ErrorBreakdownFilters traces={traces} filter={filter} onFilterChange={setFilter} />
 
       <div className="flex gap-4" style={{ alignItems: 'flex-start' }}>
         {/* Confusion Matrices */}
@@ -297,11 +369,11 @@ export default function FailureAnalysis({ traces, models, selectedModels }: Fail
       <div className="flex gap-4" style={{ alignItems: 'flex-start' }}>
         {/* Zone × Time Heatmap */}
         {candidateModel && (
-          <ZoneTimeHeatmapPanel traces={filteredTraces} candidateModel={candidateModel} candidateId={candidateId} />
+          <ZoneTimeHeatmapPanel traces={filteredTraces} candidateModel={candidateModel} candidateId={candidateId} filter={filter} />
         )}
         
         {/* Scenario F1 Bar Chart */}
-        <ScenarioBarChartPanel traces={filteredTraces} visibleModels={visibleModels} />
+        <ScenarioBarChartPanel traces={filteredTraces} visibleModels={visibleModels} filter={filter} />
       </div>
     </div>
   );

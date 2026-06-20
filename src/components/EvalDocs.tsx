@@ -682,7 +682,7 @@ export default function EvalDocs() {
           { label: 'Why it exists', content: 'Provides an immediate, unambiguous answer to "can we deploy this model?" without needing to interpret charts. This is the executive summary of the evaluation.' },
           { label: 'Verdict logic', content: 'If any gate is red → BLOCKED. If all pass but some are amber → CONDITIONAL (needs stakeholder review and sign-off). All green → READY TO SHIP.' },
           { label: 'What to do if BLOCKED', content: 'Do not deploy. Check Section 6 (Gate Checklist) to identify which specific gates are failing. Then use Sections 2–4 to diagnose why those metrics are below threshold.' },
-          { label: 'What to do if CONDITIONAL', content: 'The model passes hard requirements but has warnings. Escalate each warning to its track owner (the reviewer listed in the gate checklist). They decide if the risk is acceptable for a limited rollout.' },
+          { label: 'What to do if CONDITIONAL', content: 'The model passes hard requirements but has warnings. Escalate each warning to its track owner (the reviewer listed in the gate checklist). Alternatively, click on the gate row to review and approve/reject the warning directly in this dashboard.' },
           { label: 'Next step', content: 'Always check the Gate Checklist (Section 6) even if the verdict is green — the checklist shows HOW CLOSE you are to thresholds, which predicts future risk.' },
         ]}
       >
@@ -699,7 +699,7 @@ export default function EvalDocs() {
           { label: 'Gate anatomy', content: 'Each row shows: gate name, which track it belongs to (Track A/B/Holdout/Infra/Ops), the requirement in plain language, the measured value (colour-coded), the threshold, and the reviewer\'s sign-off status (pending / approved / rejected).' },
           { label: 'Track owners', content: 'Track A = localisation accuracy (tIoU on high-density zones). Track B = operator burden (FAR). Holdout = generalization (no regression on out-of-distribution data). Infra = latency SLA. Ops = operator confirmation rate. Each track has a designated reviewer.' },
           { label: 'What to do if a gate fails', content: 'Identify which track the gate belongs to. Use the corresponding analysis panel: Track A → Zone×Time Heatmap (Section 3). Track B → Confusion Matrices (Section 2). Holdout → Scenario Chart (Section 4). Infra → Pipeline Execution (Section 13). Ops → Trace Detail context (Section 11).' },
-          { label: 'What to do if pending', content: 'A "pending" sign-off means the reviewer hasn\'t yet approved or rejected the gate. Escalate by sharing the evaluation report and the specific evidence string shown in the gate row.' },
+          { label: 'What to do if pending', content: 'A "pending" sign-off means the reviewer hasn\'t yet approved or rejected the gate. Click the gate row to open the review panel and sign off directly, or escalate by sharing the evidence string shown in the gate row.' },
           { label: 'Next step', content: 'If all gates pass, the evaluation is complete — document your findings and deploy. If gates are failing, use Section 7 (Coverage) to verify data quality before investigating further.' },
         ]}
         guidance={

@@ -105,6 +105,7 @@ export interface GateRequirement {
   evidence: string;
   reviewer: string;
   review_status: 'pending' | 'approved' | 'rejected';
+  comment?: string;
 }
 
 export interface ScenarioSubset {

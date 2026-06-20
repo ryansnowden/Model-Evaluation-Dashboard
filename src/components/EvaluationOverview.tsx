@@ -1,18 +1,32 @@
 import React, { useState } from 'react';
 import { BarChart3, AlertTriangle, Rocket, Database } from 'lucide-react';
 import { mockTraces, mockModels, mockGates, mockCoverage } from '../data/index';
-import { IncidentTrace } from '../types';
+import { IncidentTrace, GateRequirement } from '../types';
 import ModelComparisonStrip from './ModelComparisonStrip';
 import FailureAnalysis from './FailureAnalysis';
 import DeploymentGates from './DeploymentGates';
 import TraceEvidence from './TraceEvidence';
 import TraceDetailPanel from './TraceDetailPanel';
+import GateDetailPanel from './GateDetailPanel';
 
 export default function EvaluationOverview() {
   const [selectedModels, setSelectedModels] = useState<string[]>(
     mockModels.map(m => m.run_id) // all selected by default
   );
   const [selectedTrace, setSelectedTrace] = useState<IncidentTrace | null>(null);
+  
+  const [gates, setGates] = useState<GateRequirement[]>(() => {
+    const saved = localStorage.getItem('vad-gates-review');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Failed to parse saved gates:', e);
+      }
+    }
+    return mockGates;
+  });
+  const [selectedGate, setSelectedGate] = useState<GateRequirement | null>(null);
 
   const handleToggleModel = (runId: string) => {
     setSelectedModels(prev => {
@@ -22,6 +36,24 @@ export default function EvaluationOverview() {
         return prev.filter(id => id !== runId);
       }
       return [...prev, runId];
+    });
+  };
+
+  const handleSaveGate = (gateId: string, reviewStatus: 'pending' | 'approved' | 'rejected', comment: string) => {
+    setGates(prevGates => {
+      const nextGates = prevGates.map(gate => {
+        if (gate.id === gateId) {
+          return {
+            ...gate,
+            review_status: reviewStatus,
+            comment: comment || undefined
+          };
+        }
+        return gate;
+      });
+      localStorage.setItem('vad-gates-review', JSON.stringify(nextGates));
+      setSelectedGate(null);
+      return nextGates;
     });
   };
 
@@ -76,8 +108,9 @@ export default function EvaluationOverview() {
             </div>
           </div>
           <DeploymentGates
-            gates={mockGates}
+            gates={gates}
             coverage={mockCoverage}
+            onSelectGate={setSelectedGate}
           />
         </section>
 
@@ -110,6 +143,16 @@ export default function EvaluationOverview() {
           trace={selectedTrace}
           models={mockModels.filter(m => selectedModels.includes(m.run_id))}
           onClose={() => setSelectedTrace(null)}
+        />
+      )}
+
+      {/* Gate Detail Slide-in */}
+      {selectedGate && (
+        <GateDetailPanel
+          key={selectedGate.id}
+          gate={selectedGate}
+          onClose={() => setSelectedGate(null)}
+          onSave={handleSaveGate}
         />
       )}
     </>

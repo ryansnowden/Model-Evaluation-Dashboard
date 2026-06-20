@@ -5,39 +5,53 @@ import { GateRequirement, DataCoverage } from '../types';
 interface DeploymentGatesProps {
   gates: GateRequirement[];
   coverage: DataCoverage;
+  onSelectGate?: (gate: GateRequirement) => void;
 }
 
 export function VerdictBanner({ gates }: { gates: GateRequirement[] }) {
-  const hasFailure = gates.some(g => g.status === 'fail');
-  const hasWarning = gates.some(g => g.status === 'warning');
+  const hasFailure = gates.some(g => g.status === 'fail' && g.review_status !== 'approved');
+  const hasWarning = gates.some(g => g.status === 'warning' && g.review_status !== 'approved');
 
   return (
-    <div className={`verdict-banner ${hasFailure ? 'verdict-blocked' : 'verdict-ship'}`}>
+    <div className={`verdict-banner ${hasFailure ? 'verdict-blocked' : hasWarning ? 'verdict-blocked' : 'verdict-ship'}`}>
       {hasFailure ? (
         <>
           <ShieldAlert size={20} />
-          <span>BLOCKED — {gates.filter(g => g.status === 'fail').length} gate(s) failing</span>
+          <span>BLOCKED — {gates.filter(g => g.status === 'fail' && g.review_status !== 'approved').length} gate(s) failing</span>
         </>
       ) : hasWarning ? (
         <>
           <AlertTriangle size={20} />
-          <span style={{ color: 'var(--color-warn)' }}>CONDITIONAL — {gates.filter(g => g.status === 'warning').length} warning(s) require review</span>
+          <span style={{ color: 'var(--color-warn)' }}>CONDITIONAL — {gates.filter(g => g.status === 'warning' && g.review_status !== 'approved').length} warning(s) require review</span>
         </>
       ) : (
         <>
           <Rocket size={20} />
-          <span>READY TO SHIP — All {gates.length} gates pass</span>
+          <span>READY TO SHIP — All {gates.length} gates pass (or are approved)</span>
         </>
       )}
     </div>
   );
 }
 
-export function GateChecklist({ gates }: { gates: GateRequirement[] }) {
+interface GateChecklistProps {
+  gates: GateRequirement[];
+  onSelectGate?: (gate: GateRequirement) => void;
+}
+
+export function GateChecklist({ gates, onSelectGate }: GateChecklistProps) {
   return (
     <div className="flex-col gap-2 flex-1">
       {gates.map(gate => (
-        <div key={gate.id} className="gate-row">
+        <div
+          key={gate.id}
+          className={`gate-row ${onSelectGate ? 'hover-clickable' : ''}`}
+          onClick={onSelectGate ? () => onSelectGate(gate) : undefined}
+          style={{
+            cursor: onSelectGate ? 'pointer' : 'default',
+            transition: 'all 0.2s ease',
+          }}
+        >
           <div className={`gate-icon ${gate.status}`}>
             {gate.status === 'pass' ? <CheckCircle size={14} /> :
              gate.status === 'fail' ? <XCircle size={14} /> :
@@ -51,6 +65,12 @@ export function GateChecklist({ gates }: { gates: GateRequirement[] }) {
             <div className="text-xs text-muted" style={{ marginTop: 2 }}>
               {gate.requirement}
             </div>
+            {gate.comment && (
+              <div className="text-xs text-secondary" style={{ marginTop: 4, display: 'flex', gap: 4, fontStyle: 'italic' }}>
+                <span style={{ fontWeight: 600 }}>Note:</span>
+                <span>{gate.comment}</span>
+              </div>
+            )}
           </div>
           <div className="flex-col items-center shrink-0" style={{ textAlign: 'right', minWidth: 70 }}>
             <span className="font-mono font-bold text-sm" style={{
@@ -65,7 +85,7 @@ export function GateChecklist({ gates }: { gates: GateRequirement[] }) {
             <span className={`badge ${
               gate.review_status === 'approved' ? 'badge-pass' :
               gate.review_status === 'rejected' ? 'badge-fail' : 'badge-neutral'
-            }`} style={{ fontSize: 9 }}>
+            }`} style={{ fontSize: 9, textTransform: 'uppercase' }}>
               {gate.review_status}
             </span>
           </div>
@@ -104,12 +124,12 @@ export function DataCoverageSidebar({ coverage }: { coverage: DataCoverage }) {
   );
 }
 
-export default function DeploymentGates({ gates, coverage }: DeploymentGatesProps) {
+export default function DeploymentGates({ gates, coverage, onSelectGate }: DeploymentGatesProps) {
   return (
     <div className="flex-col gap-4">
       <VerdictBanner gates={gates} />
       <div className="flex gap-4" style={{ alignItems: 'flex-start' }}>
-        <GateChecklist gates={gates} />
+        <GateChecklist gates={gates} onSelectGate={onSelectGate} />
         <DataCoverageSidebar coverage={coverage} />
       </div>
     </div>
