@@ -43,6 +43,7 @@ export function EvidenceFilterBar({
         <Search size={13} color="var(--text-muted)" />
         <input
           type="text"
+          aria-label="Search traces"
           placeholder="Search traces..."
           value={search}
           onChange={e => setSearch(e.target.value)}
@@ -131,6 +132,8 @@ export function EvidenceTable({
             <tr
               key={trace.trace_id}
               onClick={() => onSelectTrace(trace)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onSelectTrace(trace); }}
+              tabIndex={0}
               className={selectedTraceId === trace.trace_id ? 'row-highlight' : ''}
               style={{ cursor: 'pointer' }}
             >
@@ -175,7 +178,7 @@ export function EvidenceTable({
                       tag === 'false_positive' ? 'badge-fail' :
                       tag === 'false_negative' ? 'badge-warn' : 'badge-neutral';
                     return (
-                      <span key={tag} className={`badge ${cls}`} style={{ fontSize: 9, padding: '1px 5px' }}>
+                      <span key={tag} className={`badge ${cls}`} style={{ fontSize: 11, padding: '1px 5px' }}>
                         {tag === 'true_positive' ? 'TP' :
                          tag === 'false_positive' ? 'FP' :
                          tag === 'false_negative' ? 'FN' :

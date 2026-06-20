@@ -18,9 +18,9 @@
   --border-accent: rgba(99, 102, 241, 0.3);
 
   /* Text */
-  --text-primary: #e8eaf0;
-  --text-secondary: #8b90a0;
-  --text-muted: #5a5f72;
+  --text-primary: #f0f2f6;
+  --text-secondary: #a8b0bd;
+  --text-muted: #8b949e;
   --text-inverse: #0c0e14;
 
   /* Accent */
@@ -86,8 +86,8 @@
 
   /* Text */
   --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
+  --text-secondary: #334155;
+  --text-muted: #475569;
   --text-inverse: #ffffff;
 
   /* Accent */
@@ -133,11 +133,16 @@
   padding: 0;
 }
 
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
 body {
   font-family: var(--font-sans);
   background-color: var(--bg-void);
   color: var(--text-primary);
-  line-height: 1.5;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
@@ -241,10 +246,10 @@ body {
 }
 
 .nav-sub-item {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--text-muted);
-  padding: 5px 10px;
+  padding: 8px 12px;
   border-radius: var(--radius-sm);
   cursor: pointer;
   transition: all 0.1s ease;
@@ -292,11 +297,11 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 12px 16px;
   border-radius: var(--radius-md);
   cursor: pointer;
   color: var(--text-secondary);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   transition: all 0.15s ease;
   border: 1px solid transparent;
@@ -362,7 +367,7 @@ body {
 }
 
 .card-title {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -399,7 +404,7 @@ section[id] {
 }
 
 .section-subtitle {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-muted);
   margin-top: 2px;
 }
@@ -408,13 +413,13 @@ section[id] {
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 th {
   text-align: left;
-  padding: 8px 12px;
-  font-size: 10px;
+  padding: 10px 16px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -424,7 +429,7 @@ th {
 }
 
 td {
-  padding: 10px 12px;
+  padding: 12px 16px;
   border-bottom: 1px solid var(--border-subtle);
   color: var(--text-primary);
   white-space: nowrap;
@@ -443,9 +448,9 @@ tr.row-highlight td {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 8px;
+  padding: 4px 10px;
   border-radius: 100px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   font-family: var(--font-mono);
   text-transform: uppercase;
@@ -487,9 +492,9 @@ tr.row-highlight td {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 12px;
+  padding: 6px 16px;
   border-radius: 100px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -521,7 +526,7 @@ tr.row-highlight td {
 .metric-value {
   font-family: var(--font-mono);
   font-weight: 600;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 .metric-lg {
@@ -532,7 +537,7 @@ tr.row-highlight td {
 
 .metric-delta {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -564,7 +569,7 @@ tr.row-highlight td {
   align-items: center;
   justify-content: center;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -647,10 +652,10 @@ tr.row-highlight td {
   grid-template-columns: 100px 100px 70px 80px 70px 1fr 80px;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
+  padding: 10px 14px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 12px;
+  font-size: 13px;
   transition: all 0.1s ease;
   border: 1px solid transparent;
 }
@@ -673,13 +678,13 @@ tr.row-highlight td {
 }
 
 .agree-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
 }
 
@@ -705,9 +710,9 @@ tr.row-highlight td {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 100px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.1s ease;
@@ -761,7 +766,7 @@ tr.row-highlight td {
 
 .filter-pill .pill-count {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   opacity: 0.7;
 }
@@ -842,7 +847,7 @@ tr.row-highlight td {
   display: flex;
   align-items: center;
   padding: 0 8px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   font-family: var(--font-mono);
   color: var(--text-primary);
@@ -897,7 +902,7 @@ tr.row-highlight td {
 }
 
 .confusion-cell .cell-label {
-  font-size: 8px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -910,7 +915,7 @@ tr.row-highlight td {
   align-items: center;
   justify-content: flex-end;
   padding-right: 8px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -930,7 +935,7 @@ tr.row-highlight td {
 }
 
 .kpi-label {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -947,7 +952,7 @@ tr.row-highlight td {
 
 .kpi-delta {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
 }
 
@@ -969,7 +974,7 @@ tr.row-highlight td {
 .w-full { width: 100%; }
 .font-mono { font-family: var(--font-mono); }
 .text-xs { font-size: 12px; }
-.text-sm { font-size: 13px; }
+.text-sm { font-size: 14px; }
 .text-secondary { color: var(--text-secondary); }
 .text-muted { color: var(--text-muted); }
 .font-semibold { font-weight: 600; }
@@ -980,3 +985,22 @@ tr.row-highlight td {
 .shrink-0 { flex-shrink: 0; }
 .grid { display: grid; }
 .relative { position: relative; }
+
+/* Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+}
+
+.dashboard-grid > section {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+
+.dashboard-grid > section#model-comparison { grid-column: span 12; }
+.dashboard-grid > section#error-analysis { grid-column: span 12; }
+.dashboard-grid > section#deployment-gates { grid-column: span 4; }
+.dashboard-grid > section#anomaly-evidence { grid-column: span 8; }

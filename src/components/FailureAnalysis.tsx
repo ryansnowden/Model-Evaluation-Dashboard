@@ -9,6 +9,8 @@ interface FailureAnalysisProps {
   traces: IncidentTrace[];
   models: ModelConfig[];
   selectedModels: string[];
+  onFilterClick?: (filter: any) => void;
+  activeGlobalFilter?: any;
 }
 
 export function ConfusionMatricesPanel({ traces, visibleModels }: { traces: IncidentTrace[], visibleModels: ModelConfig[] }) {
@@ -29,17 +31,17 @@ export function ConfusionMatricesPanel({ traces, visibleModels }: { traces: Inci
               <span style={{ width: 8, height: 8, borderRadius: '50%', background: model.color }} />
               <span className="text-sm font-semibold">{model.short_name}</span>
               {model.is_candidate && (
-                <span className="badge badge-pass" style={{ fontSize: 9, padding: '1px 5px' }}>candidate</span>
+                <span className="badge badge-pass" style={{ fontSize: 11, padding: '1px 5px' }}>candidate</span>
               )}
             </div>
             <div className="confusion-grid" style={{ gridTemplateColumns: '48px 1fr 1fr' }}>
               {/* Header row */}
               <div />
-              <div className="confusion-label" style={{ justifyContent: 'center', fontSize: 9 }}>PRED +</div>
-              <div className="confusion-label" style={{ justifyContent: 'center', fontSize: 9 }}>PRED −</div>
+              <div className="confusion-label" style={{ justifyContent: 'center', fontSize: 11 }}>PRED +</div>
+              <div className="confusion-label" style={{ justifyContent: 'center', fontSize: 11 }}>PRED −</div>
 
               {/* Row 1: Actual Positive */}
-              <div className="confusion-label" style={{ fontSize: 9 }}>GT +</div>
+              <div className="confusion-label" style={{ fontSize: 11 }}>GT +</div>
               <div className="confusion-cell" style={{ background: 'var(--color-pass-muted)', color: 'var(--color-pass)' }}>
                 {tp}
                 <span className="cell-label">TP</span>
@@ -50,7 +52,7 @@ export function ConfusionMatricesPanel({ traces, visibleModels }: { traces: Inci
               </div>
 
               {/* Row 2: Actual Negative */}
-              <div className="confusion-label" style={{ fontSize: 9 }}>GT −</div>
+              <div className="confusion-label" style={{ fontSize: 11 }}>GT −</div>
               <div className="confusion-cell" style={{ background: fp > 0 ? 'var(--color-fail-muted)' : 'var(--bg-hover)', color: fp > 0 ? 'var(--color-fail)' : 'var(--text-muted)' }}>
                 {fp}
                 <span className="cell-label">FP</span>
@@ -67,7 +69,7 @@ export function ConfusionMatricesPanel({ traces, visibleModels }: { traces: Inci
   );
 }
 
-export function ZoneTimeHeatmapPanel({ traces, candidateModel, candidateId, filter }: { traces: IncidentTrace[], candidateModel: ModelConfig, candidateId: string, filter: string }) {
+export function ZoneTimeHeatmapPanel({ traces, candidateModel, candidateId, filter, onFilterClick }: { traces: IncidentTrace[], candidateModel: ModelConfig, candidateId: string, filter: string, onFilterClick?: (f: any) => void }) {
   const zones = useMemo(() => Array.from(new Set(traces.map(t => t.zone_type))), [traces]);
   const timeBands = useMemo(() => Array.from(new Set(traces.map(t => t.time_band))), [traces]);
 
@@ -135,7 +137,7 @@ export function ZoneTimeHeatmapPanel({ traces, candidateModel, candidateId, filt
             <tr>
               <th style={{ border: 'none', padding: '4px 8px' }}></th>
               {timeBands.map(band => (
-                <th key={band} style={{ border: 'none', padding: '4px 8px', fontSize: 9, textAlign: 'center' }}>
+                <th key={band} style={{ border: 'none', padding: '4px 8px', fontSize: 11, textAlign: 'center' }}>
                   {band}
                 </th>
               ))}
@@ -156,9 +158,11 @@ export function ZoneTimeHeatmapPanel({ traces, candidateModel, candidateId, filt
                     <td key={band} style={{ border: 'none', padding: 0 }}>
                       <div
                         className="heatmap-cell"
+                        onClick={() => onFilterClick && onFilterClick((prev: any) => ({ ...prev, zone: row.zone, timeBand: band }))}
                         style={{
                           background: (isCount && val > 0) || (!isCount && count > 0) ? getHeatBg(val) : 'var(--bg-hover)',
                           color: (isCount && val > 0) || (!isCount && count > 0) ? getHeatColor(val) : 'var(--text-muted)',
+                          cursor: onFilterClick ? 'pointer' : 'default'
                         }}
                         title={isCount ? `${row.zone} / ${band}: ${val} ${filter === 'fp' ? 'False Positives' : 'False Negatives'}` : `${row.zone} / ${band}: F1=${val.toFixed(2)}, n=${count}`}
                       >
@@ -175,27 +179,27 @@ export function ZoneTimeHeatmapPanel({ traces, candidateModel, candidateId, filt
       <div className="flex gap-3 items-center" style={{ marginTop: 8 }}>
         {!isCount ? (
           <>
-            <span className="text-muted" style={{ fontSize: 10 }}>F1 Score:</span>
-            <span className="flex items-center gap-1" style={{ fontSize: 10 }}>
+            <span className="text-muted" style={{ fontSize: 11 }}>F1 Score:</span>
+            <span className="flex items-center gap-1" style={{ fontSize: 11 }}>
               <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--color-pass-muted)', border: '1px solid rgba(16,185,129,0.3)' }} /> ≥85
             </span>
-            <span className="flex items-center gap-1" style={{ fontSize: 10 }}>
+            <span className="flex items-center gap-1" style={{ fontSize: 11 }}>
               <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--color-warn-muted)', border: '1px solid rgba(245,158,11,0.3)' }} /> 70-84
             </span>
-            <span className="flex items-center gap-1" style={{ fontSize: 10 }}>
+            <span className="flex items-center gap-1" style={{ fontSize: 11 }}>
               <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--color-fail-muted)', border: '1px solid rgba(239,68,68,0.3)' }} /> &lt;70
             </span>
           </>
         ) : (
           <>
-            <span className="text-muted" style={{ fontSize: 10 }}>Error Count:</span>
-            <span className="flex items-center gap-1" style={{ fontSize: 10 }}>
+            <span className="text-muted" style={{ fontSize: 11 }}>Error Count:</span>
+            <span className="flex items-center gap-1" style={{ fontSize: 11 }}>
               <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--bg-hover)', border: '1px solid var(--border-default)' }} /> 0
             </span>
-            <span className="flex items-center gap-1" style={{ fontSize: 10 }}>
+            <span className="flex items-center gap-1" style={{ fontSize: 11 }}>
               <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--color-warn-muted)', border: '1px solid rgba(245,158,11,0.3)' }} /> 1-2
             </span>
-            <span className="flex items-center gap-1" style={{ fontSize: 10 }}>
+            <span className="flex items-center gap-1" style={{ fontSize: 11 }}>
               <span style={{ width: 10, height: 10, borderRadius: 2, background: 'var(--color-fail-muted)', border: '1px solid rgba(239,68,68,0.3)' }} /> 3+
             </span>
           </>
@@ -224,7 +228,7 @@ const CustomTooltip = ({ active, payload, label, isCount }: any) => {
   );
 };
 
-export function ScenarioBarChartPanel({ traces, visibleModels, filter }: { traces: IncidentTrace[], visibleModels: ModelConfig[], filter: string }) {
+export function ScenarioBarChartPanel({ traces, visibleModels, filter, onFilterClick }: { traces: IncidentTrace[], visibleModels: ModelConfig[], filter: string, onFilterClick?: (f: any) => void }) {
   const scenarioData = useMemo(() => {
     const scenarios = Array.from(new Set(traces.map(t => t.scenario_label)));
     return scenarios.map(scenario => {
@@ -268,10 +272,23 @@ export function ScenarioBarChartPanel({ traces, visibleModels, filter }: { trace
       <div className="card-title">{title}</div>
       <div style={{ height: 220 }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={scenarioData} layout="vertical" margin={{ top: 5, right: 20, left: 10, bottom: 5 }} barGap={2}>
+          <BarChart 
+            data={scenarioData} 
+            layout="vertical" 
+            margin={{ top: 5, right: 20, left: 10, bottom: 5 }} 
+            barGap={2}
+            onClick={(e) => {
+              if (e && e.activeLabel && onFilterClick) {
+                // Re-add underscores if needed, or we just map back to label by replacing spaces with underscores?
+                // The label comes out as "loading dock" we need "loading_dock"
+                onFilterClick((prev: any) => ({ ...prev, scenario: e.activeLabel?.toString().replace(/ /g, '_') }));
+              }
+            }}
+            style={{ cursor: onFilterClick ? 'pointer' : 'default' }}
+          >
             <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" horizontal={false} />
-            <XAxis type="number" domain={[0, maxDomain]} tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
-            <YAxis dataKey="scenario" type="category" tick={{ fontSize: 10, fill: 'var(--text-secondary)' }} axisLine={false} tickLine={false} width={110} />
+            <XAxis type="number" domain={[0, maxDomain]} tick={{ fontSize: 12, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+            <YAxis dataKey="scenario" type="category" tick={{ fontSize: 12, fill: 'var(--text-secondary)' }} axisLine={false} tickLine={false} width={110} />
             <Tooltip content={<CustomTooltip isCount={isCount} />} />
             {visibleModels.map(m => (
               <Bar key={m.run_id} dataKey={m.short_name} fill={m.color} radius={[0, 3, 3, 0]} barSize={8} />
@@ -343,9 +360,10 @@ export function ErrorBreakdownFilters({ traces, filter, onFilterChange }: { trac
   );
 }
 
-export default function FailureAnalysis({ traces, models, selectedModels }: FailureAnalysisProps) {
-  const [filter, setFilter] = useState<string>('all');
-  
+export default function FailureAnalysis({ traces, models, selectedModels, onFilterClick, activeGlobalFilter }: FailureAnalysisProps) {
+  const [filter, setFilter] = useState<'all' | 'fp' | 'fn'>('all');
+  const [activeTab, setActiveTab] = useState<'confusion' | 'heatmap' | 'scenarios'>('confusion');
+
   const visibleModels = models.filter(m => selectedModels.includes(m.run_id));
   const candidateId = selectedModels[selectedModels.length - 1] || selectedModels[0];
   const candidateModel = models.find(m => m.run_id === candidateId);
@@ -359,21 +377,33 @@ export default function FailureAnalysis({ traces, models, selectedModels }: Fail
 
   return (
     <div className="flex-col gap-4">
-      <ErrorBreakdownFilters traces={traces} filter={filter} onFilterChange={setFilter} />
-
-      <div className="flex gap-4" style={{ alignItems: 'flex-start' }}>
-        {/* Confusion Matrices */}
-        <ConfusionMatricesPanel traces={filteredTraces} visibleModels={visibleModels} />
+      <div className="flex justify-between items-center flex-wrap gap-4">
+        <ErrorBreakdownFilters traces={traces} filter={filter} onFilterChange={setFilter} />
+        <div className="flex gap-2">
+          <button className={`filter-pill ${activeTab === 'confusion' ? 'active' : ''}`} onClick={() => setActiveTab('confusion')}>
+            Confusion Matrices
+          </button>
+          <button className={`filter-pill ${activeTab === 'heatmap' ? 'active' : ''}`} onClick={() => setActiveTab('heatmap')}>
+            Zone × Time Heatmap
+          </button>
+          <button className={`filter-pill ${activeTab === 'scenarios' ? 'active' : ''}`} onClick={() => setActiveTab('scenarios')}>
+            Scenario Breakdown
+          </button>
+        </div>
       </div>
 
-      <div className="flex gap-4" style={{ alignItems: 'flex-start' }}>
-        {/* Zone × Time Heatmap */}
-        {candidateModel && (
-          <ZoneTimeHeatmapPanel traces={filteredTraces} candidateModel={candidateModel} candidateId={candidateId} filter={filter} />
+      <div className="flex gap-4" style={{ alignItems: 'flex-start', minHeight: 380 }}>
+        {activeTab === 'confusion' && (
+          <ConfusionMatricesPanel traces={filteredTraces} visibleModels={visibleModels} />
         )}
         
-        {/* Scenario F1 Bar Chart */}
-        <ScenarioBarChartPanel traces={filteredTraces} visibleModels={visibleModels} filter={filter} />
+        {activeTab === 'heatmap' && candidateModel && (
+          <ZoneTimeHeatmapPanel traces={filteredTraces} candidateModel={candidateModel} candidateId={candidateId} filter={filter} onFilterClick={onFilterClick} />
+        )}
+        
+        {activeTab === 'scenarios' && (
+          <ScenarioBarChartPanel traces={filteredTraces} visibleModels={visibleModels} filter={filter} onFilterClick={onFilterClick} />
+        )}
       </div>
     </div>
   );

@@ -277,7 +277,6 @@ export default function ResearchInsights() {
         <div className="section-header">
           <div>
             <div className="flex items-center gap-2">
-              <Brain size={16} color="var(--accent)" />
               <h2 className="section-title">Capability Maturity Radar</h2>
             </div>
             <p className="section-subtitle">Pipeline capabilities across 7 dimensions.</p>
@@ -355,7 +354,6 @@ export default function ResearchInsights() {
         <div className="section-header">
           <div>
             <div className="flex items-center gap-2">
-              <Target size={16} color="var(--color-warn)" />
               <h2 className="section-title">Gap Analysis & Recommendations</h2>
             </div>
             <p className="section-subtitle">Prioritised capability gaps with actionable next steps. Ordered by business impact.</p>
@@ -439,7 +437,6 @@ export default function ResearchInsights() {
         <div className="section-header">
           <div>
             <div className="flex items-center gap-2">
-              <FlaskConical size={16} color="var(--accent)" />
               <h2 className="section-title">Benchmark Landscape</h2>
             </div>
             <p className="section-subtitle">Model AUC performance mapped against standard datasets.</p>
@@ -521,7 +518,6 @@ export default function ResearchInsights() {
         <div className="section-header">
           <div>
             <div className="flex items-center gap-2">
-              <Microscope size={16} color="var(--color-warn)" />
               <h2 className="section-title">Real-World Failure Case Studies</h2>
             </div>
             <p className="section-subtitle">Operational failures from the self-learning CCTV platform — what broke and what fixed it.</p>
@@ -632,7 +628,6 @@ export default function ResearchInsights() {
         <div className="section-header">
           <div>
             <div className="flex items-center gap-2">
-              <Cpu size={16} color="var(--color-info)" />
               <h2 className="section-title">Edge Hardware Readiness</h2>
             </div>
             <p className="section-subtitle">Can your A4 pipeline run on edge? Hardware comparison with deployment recommendations.</p>
@@ -735,7 +730,6 @@ export default function ResearchInsights() {
         <div className="section-header">
           <div>
             <div className="flex items-center gap-2">
-              <BookOpen size={16} color="var(--accent)" />
               <h2 className="section-title">Technical Literature</h2>
             </div>
             <p className="section-subtitle">Key references scored by relevance to your pipeline. Click to expand.</p>
@@ -838,7 +832,6 @@ export default function ResearchInsights() {
         <div className="section-header">
           <div>
             <div className="flex items-center gap-2">
-              <Shield size={16} color="var(--color-fail)" />
               <h2 className="section-title">Evaluation Methodology Critique</h2>
             </div>
             <p className="section-subtitle">Structural flaws identified by 2026 papers.</p>
@@ -921,7 +914,6 @@ export default function ResearchInsights() {
         <div className="section-header">
           <div>
             <div className="flex items-center gap-2">
-              <TrendingUp size={16} color="var(--color-pass)" />
               <h2 className="section-title">Adoption Roadmap</h2>
             </div>
             <p className="section-subtitle">Prioritised technology adoption path based on effort vs. impact analysis.</p>

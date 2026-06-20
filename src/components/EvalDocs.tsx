@@ -98,7 +98,6 @@ function DocSection({ number, title, icon, children, rows, defaultOpen = true, g
           {number}
         </span>
         <div className="flex items-center gap-2">
-          {icon}
           <h2 className="section-title" style={{ margin: 0 }}>{title}</h2>
         </div>
         <div style={{ marginLeft: 'auto' }}>
@@ -119,7 +118,7 @@ function DocSection({ number, title, icon, children, rows, defaultOpen = true, g
           }}>
             <div style={{
               position: 'absolute', top: 8, right: 12,
-              fontSize: 9, fontWeight: 600, textTransform: 'uppercase',
+              fontSize: 11, fontWeight: 600, textTransform: 'uppercase',
               letterSpacing: '0.08em', color: 'var(--text-muted)',
               background: 'var(--bg-surface)', padding: '2px 8px',
               borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)',
@@ -177,6 +176,7 @@ function TraceDetailHeader({ trace }: { trace: IncidentTrace }) {
         </div>
       </div>
       <button
+        aria-label="Close details"
         style={{
           background: 'var(--bg-hover)', border: '1px solid var(--border-default)',
           borderRadius: 'var(--radius-sm)', padding: '6px', cursor: 'pointer',
@@ -213,19 +213,19 @@ function TraceContextAndTriage({ trace }: { trace: IncidentTrace }) {
         <div className="card-title">Operator Triage</div>
         <div className="grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div className="flex-col gap-1">
-            <span className="text-muted" style={{ fontSize: 10, textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.05em' }}>Action</span>
+            <span className="text-muted" style={{ fontSize: 11, textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.05em' }}>Action</span>
             <span className="font-mono text-xs font-semibold">{trace.operator_action.replace(/_/g, ' ').toUpperCase()}</span>
           </div>
           <div className="flex-col gap-1">
-            <span className="text-muted" style={{ fontSize: 10, textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.05em' }}>Review Time</span>
+            <span className="text-muted" style={{ fontSize: 11, textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.05em' }}>Review Time</span>
             <span className="font-mono text-xs font-semibold">{trace.review_time_sec}s</span>
           </div>
           <div className="flex-col gap-1">
-            <span className="text-muted" style={{ fontSize: 10, textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.05em' }}>Priority</span>
+            <span className="text-muted" style={{ fontSize: 11, textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.05em' }}>Priority</span>
             <span className="font-mono text-xs font-semibold">{trace.priority.toUpperCase()}</span>
           </div>
           <div className="flex-col gap-1">
-            <span className="text-muted" style={{ fontSize: 10, textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.05em' }}>Annotation</span>
+            <span className="text-muted" style={{ fontSize: 11, textTransform: 'uppercase', fontWeight: 600, letterSpacing: '0.05em' }}>Annotation</span>
             <span className="font-mono text-xs font-semibold">{trace.annotation_status.toUpperCase()}</span>
           </div>
         </div>
@@ -277,7 +277,7 @@ function TraceScoreTimeline({ trace }: { trace: IncidentTrace }) {
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={timelineData} margin={{ top: 5, right: 5, left: -25, bottom: 5 }}>
             <XAxis dataKey="frame" tick={false} axisLine={false} />
-            <YAxis domain={[0, 1]} tick={{ fontSize: 10, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+            <YAxis domain={[0, 1]} tick={{ fontSize: 11, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
             <ReferenceLine y={trace.threshold} stroke="var(--color-fail)" strokeDasharray="4 4" strokeWidth={1} />
             <Line type="monotone" dataKey="raw" stroke="var(--text-muted)" strokeWidth={1} dot={false} isAnimationActive={false} opacity={0.4} />
             <Line type="monotone" dataKey="smooth" stroke="var(--accent)" strokeWidth={2} dot={false} isAnimationActive={false} />
@@ -307,9 +307,9 @@ function TraceModelScores({ trace, models }: { trace: IncidentTrace; models: typ
                   <span style={{ width: 8, height: 8, borderRadius: '50%', background: model.color, display: 'inline-block' }} />
                   <span className="text-xs font-semibold">{model.short_name}</span>
                   {detected ? (
-                    <span className="badge badge-pass" style={{ fontSize: 9, padding: '1px 5px' }}>DETECTED</span>
+                    <span className="badge badge-pass" style={{ fontSize: 11, padding: '1px 5px' }}>DETECTED</span>
                   ) : (
-                    <span className="badge badge-neutral" style={{ fontSize: 9, padding: '1px 5px' }}>SILENT</span>
+                    <span className="badge badge-neutral" style={{ fontSize: 11, padding: '1px 5px' }}>SILENT</span>
                   )}
                 </div>
                 <span className="font-mono text-xs" style={{ color: model.color }}>
@@ -377,7 +377,7 @@ function ModelCard({ model, technique, rationale }: {
         <span style={{ width: 10, height: 10, borderRadius: '50%', background: model.color, flexShrink: 0 }} />
         <span className="font-semibold text-sm">{model.short_name}</span>
         {model.is_candidate && (
-          <span className="badge badge-pass" style={{ fontSize: 8, padding: '1px 5px' }}>candidate</span>
+          <span className="badge badge-pass" style={{ fontSize: 11, padding: '1px 5px' }}>candidate</span>
         )}
       </div>
       <div className="text-xs font-semibold" style={{ color: model.color, marginBottom: 4 }}>{technique}</div>
@@ -480,7 +480,6 @@ export default function EvalDocs() {
         {/* Why 5 Models — Ablation Study */}
         <div style={{ marginBottom: 20 }}>
           <div className="flex items-center gap-2" style={{ marginBottom: 14 }}>
-            <GitBranch size={16} color="var(--accent)" />
             <h3 className="section-title" style={{ margin: 0, fontSize: 14 }}>The 5-Model Ablation Study</h3>
           </div>
           <div className="text-sm text-secondary" style={{ lineHeight: 1.7, marginBottom: 14, maxWidth: 780 }}>
@@ -525,7 +524,6 @@ export default function EvalDocs() {
         {/* Workflow overview */}
         <div style={{ marginBottom: 8 }}>
           <div className="flex items-center gap-2" style={{ marginBottom: 10 }}>
-            <Eye size={16} color="var(--accent)" />
             <h3 className="section-title" style={{ margin: 0, fontSize: 14 }}>How to Use This Dashboard</h3>
           </div>
           <div className="text-sm text-secondary" style={{ lineHeight: 1.7, marginBottom: 4 }}>
@@ -541,7 +539,6 @@ export default function EvalDocs() {
           ══════════════════════════════════════════════════════ */}
       <section id="docs-workflow">
         <div className="flex items-center gap-2" style={{ marginBottom: 16 }}>
-          <Zap size={18} color="var(--accent)" />
           <h2 className="section-title" style={{ margin: 0 }}>6-Step Diagnostic Workflow</h2>
         </div>
         <div className="text-sm text-secondary" style={{ lineHeight: 1.7, marginBottom: 16, maxWidth: 780 }}>
@@ -646,7 +643,7 @@ export default function EvalDocs() {
         }
       >
         {candidateModel ? (
-          <ZoneTimeHeatmapPanel traces={mockTraces} candidateModel={candidateModel} candidateId={candidateId} />
+          <ZoneTimeHeatmapPanel traces={mockTraces} candidateModel={mockModels[3]} candidateId="a4-temp" filter="all" />
         ) : <div />}
       </DocSection>
 
@@ -669,7 +666,7 @@ export default function EvalDocs() {
           </Callout>
         }
       >
-        <ScenarioBarChartPanel traces={mockTraces} visibleModels={visibleModels} />
+        <ScenarioBarChartPanel traces={mockTraces} visibleModels={mockModels} filter="all" />
       </DocSection>
 
       {/* ── Section 5: Deployment Verdict Banner ── */}
@@ -893,7 +890,6 @@ export default function EvalDocs() {
           ══════════════════════════════════════════════════════ */}
       <section id="docs-troubleshooting" style={{ marginTop: 16 }}>
         <div className="flex items-center gap-2" style={{ marginBottom: 6 }}>
-          <HelpCircle size={18} color="var(--color-warn)" />
           <h2 className="section-title" style={{ margin: 0 }}>Troubleshooting Common Problems</h2>
         </div>
         <div className="text-sm text-secondary" style={{ lineHeight: 1.7, marginBottom: 16, maxWidth: 780 }}>

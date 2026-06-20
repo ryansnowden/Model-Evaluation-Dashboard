@@ -8,12 +8,44 @@ import DeploymentGates from './DeploymentGates';
 import TraceEvidence from './TraceEvidence';
 import TraceDetailPanel from './TraceDetailPanel';
 import GateDetailPanel from './GateDetailPanel';
+import KPIRibbon from './KPIRibbon';
 
 export default function EvaluationOverview() {
+  const [liveTraces, setLiveTraces] = useState<IncidentTrace[]>(mockTraces);
+  
+  // Simulate live data ingestion
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setLiveTraces(prev => {
+        const randomTrace = prev[Math.floor(Math.random() * prev.length)];
+        const newTrace = {
+          ...randomTrace,
+          trace_id: `tr_${Math.random().toString(36).substring(2, 9)}`,
+          timestamp: new Date().toISOString(),
+        };
+        return [newTrace, ...prev];
+      });
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const [selectedModels, setSelectedModels] = useState<string[]>(
     mockModels.map(m => m.run_id) // all selected by default
   );
   const [selectedTrace, setSelectedTrace] = useState<IncidentTrace | null>(null);
+  const [globalFilter, setGlobalFilter] = useState<{ zone?: string; timeBand?: string; scenario?: string; tags?: string[] }>({});
+
+  const filteredTraces = React.useMemo(() => {
+    return liveTraces.filter(t => {
+      if (globalFilter.zone && t.zone_type !== globalFilter.zone) return false;
+      if (globalFilter.timeBand && t.time_band !== globalFilter.timeBand) return false;
+      if (globalFilter.scenario && t.scenario_label !== globalFilter.scenario) return false;
+      if (globalFilter.tags && globalFilter.tags.length > 0) {
+        if (!globalFilter.tags.some(tag => t.tags.includes(tag))) return false;
+      }
+      return true;
+    });
+  }, [globalFilter]);
   
   const [gates, setGates] = useState<GateRequirement[]>(() => {
     const saved = localStorage.getItem('vad-gates-review');
@@ -59,13 +91,15 @@ export default function EvaluationOverview() {
 
   return (
     <>
-      <div className="flex-col gap-8" style={{ paddingBottom: 40 }}>
+      {/* KPI Ribbon (Hero Metrics) */}
+      <KPIRibbon traces={liveTraces} models={mockModels} gates={gates} />
+
+      <div className="dashboard-grid" style={{ paddingBottom: 40 }}>
         {/* Section A: Model Comparison */}
         <section id="model-comparison">
           <div className="section-header">
             <div>
               <div className="flex items-center gap-2">
-                <BarChart3 size={16} color="var(--accent)" />
                 <h2 className="section-title">Model Performance Comparison</h2>
               </div>
               <p className="section-subtitle">Compare metrics across all model iterations — best-in-class values highlighted in green.</p>
@@ -83,16 +117,17 @@ export default function EvaluationOverview() {
           <div className="section-header">
             <div>
               <div className="flex items-center gap-2">
-                <AlertTriangle size={16} color="var(--color-warn)" />
                 <h2 className="section-title">Error Analysis & Failure Modes</h2>
               </div>
               <p className="section-subtitle">Diagnose where and when models underperform — broken down by error type, zone, time, and scenario.</p>
             </div>
           </div>
           <FailureAnalysis
-            traces={mockTraces}
+            traces={filteredTraces}
             models={mockModels}
             selectedModels={selectedModels}
+            onFilterClick={setGlobalFilter}
+            activeGlobalFilter={globalFilter}
           />
         </section>
 
@@ -101,7 +136,6 @@ export default function EvaluationOverview() {
           <div className="section-header">
             <div>
               <div className="flex items-center gap-2">
-                <Rocket size={16} color="var(--color-pass)" />
                 <h2 className="section-title">Production Readiness Gates</h2>
               </div>
               <p className="section-subtitle">Automated ship/no-ship verdict — every gate must pass before the candidate model goes live.</p>
@@ -119,21 +153,18 @@ export default function EvaluationOverview() {
           <div className="section-header">
             <div>
               <div className="flex items-center gap-2">
-                <Database size={16} color="var(--accent)" />
                 <h2 className="section-title">Trace-Level Evidence</h2>
               </div>
               <p className="section-subtitle">Drill into individual traces to inspect model agreement, scores, and operator decisions.</p>
             </div>
           </div>
-          <div className="card" style={{ padding: 16 }}>
             <TraceEvidence
-              traces={mockTraces}
+              traces={filteredTraces}
               models={mockModels}
               selectedModels={selectedModels}
               onSelectTrace={setSelectedTrace}
               selectedTraceId={selectedTrace?.trace_id ?? null}
             />
-          </div>
         </section>
       </div>
 
@@ -149,7 +180,6 @@ export default function EvaluationOverview() {
       {/* Gate Detail Slide-in */}
       {selectedGate && (
         <GateDetailPanel
-          key={selectedGate.id}
           gate={selectedGate}
           onClose={() => setSelectedGate(null)}
           onSave={handleSaveGate}
