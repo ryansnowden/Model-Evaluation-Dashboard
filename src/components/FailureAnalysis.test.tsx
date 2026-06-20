@@ -12,4 +12,10 @@ describe('FailureAnalysis', () => {
     
     expect(screen.getByTestId('category-filters')).toBeInTheDocument();
   });
+
+  it('should render the error breakdown visualization', () => {
+    render(<FailureAnalysis traces={mockTraces} models={mockModels} selectedModels={[]} />);
+    
+    expect(screen.getByTestId('error-breakdown-summary')).toBeInTheDocument();
+  });
 });

@@ -220,6 +220,31 @@ export function ScenarioBarChartPanel({ traces, visibleModels }: { traces: Incid
   );
 }
 
+export function ErrorBreakdownSummary({ traces }: { traces: IncidentTrace[] }) {
+  const fpCount = traces.filter(t => t.tags.includes('false_positive')).length;
+  const fnCount = traces.filter(t => t.tags.includes('false_negative')).length;
+  
+  return (
+    <div data-testid="error-breakdown-summary" className="card flex-1" style={{ padding: 16, minWidth: 250 }}>
+      <div className="card-title" style={{ marginBottom: 8 }}>Error Breakdown Summary</div>
+      <div className="flex gap-6">
+        <div className="flex flex-col">
+          <span className="text-muted text-sm">Total Traces</span>
+          <span className="font-semibold text-lg">{traces.length}</span>
+        </div>
+        <div className="flex flex-col">
+          <span className="text-sm" style={{ color: 'var(--color-fail)' }}>False Positives</span>
+          <span className="font-semibold text-lg">{fpCount}</span>
+        </div>
+        <div className="flex flex-col">
+          <span className="text-sm" style={{ color: 'var(--color-warn)' }}>False Negatives</span>
+          <span className="font-semibold text-lg">{fnCount}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function FailureAnalysis({ traces, models, selectedModels }: FailureAnalysisProps) {
   const [filter, setFilter] = useState<string>('all');
   
@@ -236,25 +261,30 @@ export default function FailureAnalysis({ traces, models, selectedModels }: Fail
 
   return (
     <div className="flex-col gap-4">
-      <div data-testid="category-filters" className="flex gap-2" style={{ marginBottom: '1rem' }}>
-        <button 
-          className={`badge ${filter === 'all' ? 'badge-neutral' : ''}`}
-          onClick={() => setFilter('all')}
-        >
-          All Traces
-        </button>
-        <button 
-          className={`badge ${filter === 'fp' ? 'badge-fail' : ''}`}
-          onClick={() => setFilter('fp')}
-        >
-          False Positives
-        </button>
-        <button 
-          className={`badge ${filter === 'fn' ? 'badge-warn' : ''}`}
-          onClick={() => setFilter('fn')}
-        >
-          False Negatives
-        </button>
+      <div className="flex gap-4 flex-wrap" style={{ alignItems: 'center', marginBottom: '1rem' }}>
+        <ErrorBreakdownSummary traces={traces} />
+        
+        <div data-testid="category-filters" className="flex gap-2 items-center">
+          <span className="text-sm font-semibold">Category Filter:</span>
+          <button 
+            className={`badge ${filter === 'all' ? 'badge-neutral' : ''}`}
+            onClick={() => setFilter('all')}
+          >
+            All Traces
+          </button>
+          <button 
+            className={`badge ${filter === 'fp' ? 'badge-fail' : ''}`}
+            onClick={() => setFilter('fp')}
+          >
+            False Positives
+          </button>
+          <button 
+            className={`badge ${filter === 'fn' ? 'badge-warn' : ''}`}
+            onClick={() => setFilter('fn')}
+          >
+            False Negatives
+          </button>
+        </div>
       </div>
 
       <div className="flex gap-4" style={{ alignItems: 'flex-start' }}>
